@@ -1,0 +1,383 @@
+// ============================================================
+// Prisma Schema
+// 仕様: /docs/db-design.md（凍結済み）
+// JSONB構造: /docs/jsonb-schema.md（凍結済み）
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Neon: pooling接続(url) と migrate用直接接続(directUrl) を分離
+}
+
+// ============================================================
+// 1. clients（クライアント事務所）
+// ============================================================
+model Client {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // 公開URL /lp/{slug}/{practice_area_slug} に使用
+  slug               String    @unique @db.VarChar(100)
+  firmName           String    @db.VarChar(200)
+  ownerName          String    @db.VarChar(100)
+  prefecture         String?   @db.VarChar(20)
+  email              String    @db.VarChar(255)
+  phone              String?   @db.VarChar(20)
+  // 契約情報
+  // active | paused | churned
+  status             String    @default("active") @db.VarChar(20)
+  monthlyFee         Int
+  contractStartedAt  DateTime  @db.Date
+  contractEndedAt    DateTime? @db.Date
+  // AI生成用
+  prText             String?
+  targetClients      String?
+  // 内部管理
+  notes              String?
+  // テストデータ識別フラグ（purgeTestData.ts の削除対象スコープ）
+  testClient         Boolean   @default(false)
+  createdAt          DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime  @updatedAt @db.Timestamptz(6)
+
+  landingPages     LandingPage[]
+  leads            Lead[]
+  invoices         Invoice[]
+  aiGenerationLogs AiGenerationLog[]
+  monthlyReports   MonthlyReport[]
+  // マーケOS
+  sites            Site[]
+
+  @@map("clients")
+}
+
+// ============================================================
+// マーケOS: sites（Webサイト）
+// 1クライアントが複数のサイト（TOP / LP など）を持つ
+// ============================================================
+model Site {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId  String   @db.Uuid
+  name      String   @db.VarChar(200)
+  domain    String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  client Client @relation(fields: [clientId], references: [id])
+  pages  Page[]
+
+  @@index([clientId])
+  @@map("sites")
+}
+
+// ============================================================
+// AI集客OS: ai_sites（オンボーディングで生成した集客サイト）
+// ============================================================
+model AiSite {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug          String   @unique @db.VarChar(100)
+  // ユーザー入力
+  firmName      String   @db.VarChar(200)
+  prefecture    String   @db.VarChar(20)
+  services      String[]
+  strengths     String
+  targetClients String?
+  styles        String[]
+  // AI生成コンテンツ: { hero, services, profile, faq, cta }
+  siteContent   Json     @default("{}")
+  // SEOキーワード候補: string[]
+  seoKeywords   Json     @default("[]")
+  // エディタ上に追加した自由配置要素（CanvasElement[]）
+  editorOverlay Json     @default("[]")
+  // draft | published | paused
+  status        String   @default("draft") @db.VarChar(20)
+  autoReply     Boolean  @default(true)
+  // ⚠️ AIコスト制御: 同一入力の重複生成を防ぐためのSHA-256ハッシュ
+  // 計算対象: firmName + prefecture + services + strengths + targetClients + styles
+  // 同じハッシュが存在する場合はAI呼び出しをスキップしDBから返す
+  promptHash    String?  @db.VarChar(64)
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
+
+  leads    AiSiteLead[]
+  seoPages AiSeoPage[]
+
+  @@index([status])
+  @@index([promptHash])
+  @@map("ai_sites")
+}
+
+// ============================================================
+// AI集客OS: ai_site_leads（公開サイト経由の問い合わせ）
+// ============================================================
+model AiSiteLead {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  siteId        String    @db.Uuid
+  name          String?   @db.VarChar(100)
+  email         String?   @db.VarChar(255)
+  phone         String?   @db.VarChar(20)
+  message       String?
+  utmSource     String?   @db.VarChar(100)
+  utmMedium     String?   @db.VarChar(100)
+  utmCampaign   String?   @db.VarChar(200)
+  referrerUrl   String?
+  // 自動返信
+  autoReplySent Boolean   @default(false)
+  autoReplyAt   DateTime? @db.Timestamptz(6)
+  autoReplyText String?
+  // new | contacted | converted
+  status        String    @default("new") @db.VarChar(20)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+
+  site AiSite @relation(fields: [siteId], references: [id])
+
+  @@index([siteId])
+  @@index([createdAt])
+  @@map("ai_site_leads")
+}
+
+// ============================================================
+// AI集客OS: ai_seo_pages（業務×地域のSEOページ）
+// ============================================================
+model AiSeoPage {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  siteId    String   @db.Uuid
+  slug      String   @db.VarChar(200)
+  keyword   String   @db.VarChar(200)
+  title     String   @db.VarChar(300)
+  // { headline, body, faq, cta }
+  content   Json     @default("{}")
+  // draft | published
+  status    String   @default("draft") @db.VarChar(20)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  site AiSite @relation(fields: [siteId], references: [id])
+
+  @@unique([siteId, slug])
+  @@index([siteId])
+  @@map("ai_seo_pages")
+}
+
+// ============================================================
+// マーケOS: pages（ページ = ブロックJSON配列を保持）
+// @@unique([siteId, slug]): 同サイト内でスラッグ重複禁止
+// ============================================================
+model Page {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  siteId    String   @db.Uuid
+  slug      String   @db.VarChar(100)
+  title     String   @db.VarChar(300)
+  // draft | published
+  status    String   @default("draft") @db.VarChar(20)
+  // Block[] のJSON配列。構造は src/lib/marketing-os/blocks/types.ts に準拠
+  blocks    Json     @default("[]")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@unique([siteId, slug])
+  @@index([siteId])
+  @@index([status])
+  @@map("pages")
+}
+
+// ============================================================
+// 2. practice_areas（業務マスタ）
+// ============================================================
+model PracticeArea {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String  @unique @db.VarChar(100)
+  name        String  @db.VarChar(100)
+  // permit | immigration | corporate | inheritance | other
+  category    String  @db.VarChar(50)
+  description String?
+  sortOrder   Int     @default(0)
+
+  landingPages LandingPage[]
+  leads        Lead[]
+
+  @@map("practice_areas")
+}
+
+// ============================================================
+// 3. landing_pages（LP管理）
+// ============================================================
+model LandingPage {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId       String    @db.Uuid
+  practiceAreaId String    @db.Uuid
+  // 公開URLはカラムに持たない。/lp/{client.slug}/{practiceArea.slug} で導出
+  title          String    @db.VarChar(300)
+  // draft | published | archived
+  status         String    @default("draft") @db.VarChar(20)
+  // ⚠️ 構造は /docs/jsonb-schema.md に準拠。キー名を変えるな
+  // { hero, problems, features, flow, faq, profile, cta_bottom }
+  content        Json      @default("{}")
+  metaDescription String?  @db.VarChar(500)
+  targetKeywords  String[]
+  // ⚠️ 更新ルール: Lead INSERT時にトランザクション内で +1 すること
+  totalLeads     Int       @default(0)
+  publishedAt    DateTime? @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(6)
+
+  client       Client       @relation(fields: [clientId], references: [id])
+  practiceArea PracticeArea @relation(fields: [practiceAreaId], references: [id])
+  leads        Lead[]
+  aiGenerationLogs AiGenerationLog[]
+
+  // 1クライアント × 1業務 = 1LP（ビジネスルールをDBで強制）
+  @@unique([clientId, practiceAreaId])
+  @@index([clientId])
+  @@index([status])
+  @@map("landing_pages")
+}
+
+// ============================================================
+// 4. leads（問い合わせ = 成果証明の核）
+// ============================================================
+model Lead {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId       String    @db.Uuid
+  // ⚠️ INSERT時は必ず landingPage.practiceAreaId と同値をセット
+  practiceAreaId String    @db.Uuid
+  landingPageId  String    @db.Uuid
+
+  // 問い合わせ内容
+  name    String? @db.VarChar(100)
+  email   String? @db.VarChar(255)
+  phone   String? @db.VarChar(20)
+  message String?
+
+  // フォーム任意入力「何と検索してこのページを見つけましたか？」
+  userKeyword String? @db.VarChar(300)
+
+  // UTMパラメータ
+  // ⚠️ LP表示時に sessionStorage 保存 → hidden input 経由で POST
+  utmSource   String? @db.VarChar(100)
+  utmMedium   String? @db.VarChar(100)
+  utmCampaign String? @db.VarChar(200)
+  // 広告キーワード（Google Ads ValueTrack: {keyword}）
+  // 集計時は utmMedium = 'cpc' のものだけ使用
+  utmTerm     String? @db.VarChar(300)
+  referrerUrl String?
+
+  // new | notified | converted | invalid
+  status     String    @default("new") @db.VarChar(20)
+  notifiedAt DateTime? @db.Timestamptz(6)
+  // テストデータ識別フラグ（purgeTestData.ts の削除対象スコープ）
+  testFlag   Boolean   @default(false)
+  // 月次集計の基準。必須
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+
+  client       Client       @relation(fields: [clientId], references: [id])
+  practiceArea PracticeArea @relation(fields: [practiceAreaId], references: [id])
+  landingPage  LandingPage  @relation(fields: [landingPageId], references: [id])
+
+  @@index([clientId])
+  @@index([landingPageId])
+  @@index([practiceAreaId])
+  @@index([createdAt])
+  @@index([status])
+  @@map("leads")
+}
+
+// ============================================================
+// 5. invoices（請求管理）
+// ============================================================
+model Invoice {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId  String    @db.Uuid
+  year      Int
+  month     Int
+  amount    Int
+  // draft | issued | paid | overdue
+  status    String    @default("draft") @db.VarChar(20)
+  issuedAt  DateTime? @db.Timestamptz(6)
+  dueDate   DateTime? @db.Date
+  paidAt    DateTime? @db.Timestamptz(6)
+  pdfUrl    String?   @db.VarChar(500)
+  notes     String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+
+  client Client @relation(fields: [clientId], references: [id])
+
+  @@unique([clientId, year, month])
+  @@index([clientId])
+  @@index([status])
+  @@map("invoices")
+}
+
+// ============================================================
+// 6. ai_generation_logs（AI生成履歴・コスト管理）
+// ============================================================
+model AiGenerationLog {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId       String   @db.Uuid
+  landingPageId  String?  @db.Uuid
+  // lp_full | lp_revision | report_summary | copy_variation
+  generationType String   @db.VarChar(50)
+  promptSnapshot String
+  output         String?
+  modelName      String   @default("claude-haiku-4-5-20251001") @db.VarChar(100)
+  inputTokens    Int?
+  outputTokens   Int?
+  costUsd        Decimal? @db.Decimal(10, 6)
+  // ⚠️ INSERT時は 'pending'。完了後に 'completed' / 'failed' に更新すること
+  // pending | completed | failed
+  status         String   @default("pending") @db.VarChar(20)
+  errorMessage   String?
+  durationMs     Int?
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  client      Client       @relation(fields: [clientId], references: [id])
+  landingPage LandingPage? @relation(fields: [landingPageId], references: [id])
+
+  @@index([clientId])
+  @@index([createdAt])
+  @@map("ai_generation_logs")
+}
+
+// ============================================================
+// 7. monthly_reports（月次レポート）
+// ============================================================
+model MonthlyReport {
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId String @db.Uuid
+  year     Int
+  month    Int
+  // generating | draft | reviewed | sent
+  status   String @default("generating") @db.VarChar(20)
+
+  // ⚠️ 構造は /docs/jsonb-schema.md に準拠。キー名を変えるな
+  // {
+  //   period, leads, leads_by_area,
+  //   top_keywords_paid, top_keywords_organic, top_user_phrases,
+  //   leads_by_source
+  // }
+  stats Json @default("{}")
+
+  // AI生成テキスト
+  aiSummary     String?
+  aiSuggestions String?
+
+  // 確認・修正後の最終版
+  reviewedSummary      String?
+  reviewedSuggestions  String?
+
+  // PDF・送信
+  pdfUrl    String?   @db.VarChar(500)
+  sentAt    DateTime? @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+
+  client Client @relation(fields: [clientId], references: [id])
+
+  @@unique([clientId, year, month])
+  @@map("monthly_reports")
+}

@@ -1,0 +1,737 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import type { SiteContent, PricingItem, AreaContent, TestimonialItem } from '@/lib/ai-site/types'
+
+// ─── InlineEditable テキスト ──────────────────────────────────────────────────
+
+interface ETProps {
+  as?: string
+  value: string
+  onChange?: (v: string) => void
+  className?: string
+  style?: React.CSSProperties
+  multi?: boolean
+}
+
+function ET({ as: tag = 'span', value, onChange, className = '', style, multi = false }: ETProps) {
+  const ref = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (el && el !== document.activeElement) el.textContent = value
+  }, [value])
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Tag = tag as any
+  const mergedStyle = { whiteSpace: 'pre-wrap' as const, ...style }
+
+  if (!onChange) {
+    return <Tag className={className} style={mergedStyle}>{value}</Tag>
+  }
+
+  return (
+    <Tag
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      className={`${className} cursor-text focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 rounded-sm`}
+      style={mergedStyle}
+      onBlur={(e: React.FocusEvent<HTMLElement>) => onChange(e.currentTarget.textContent ?? '')}
+      onKeyDown={(e: React.KeyboardEvent<HTMLElement>) => {
+        if (!multi && e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() }
+        if (e.key === 'Escape') { e.currentTarget.textContent = value; e.currentTarget.blur() }
+      }}
+    />
+  )
+}
+
+// ─── ProfilePhoto アップロード ────────────────────────────────────────────────
+
+function ProfilePhotoUpload({ src, editable, onChange }: {
+  src?: string; editable: boolean; onChange: (url: string) => void
+}) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const upload = async (file: File) => {
+    setUploading(true)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      const res = await fetch('/api/marketing-os/upload', { method: 'POST', body: form })
+      if (!res.ok) throw new Error()
+      const { url } = await res.json()
+      onChange(url)
+    } catch { alert('アップロードに失敗しました') }
+    finally { setUploading(false) }
+  }
+
+  return (
+    <div
+      className={`relative overflow-hidden shrink-0 ${editable ? 'group cursor-pointer' : ''}`}
+      style={{ width: 180, height: 220, borderRadius: 16 }}
+      onClick={() => editable && fileRef.current?.click()}
+    >
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt="プロフィール写真" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      ) : (
+        <div style={{
+          width: '100%', height: '100%',
+          background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+        }}>
+          <span style={{ fontSize: 52 }}>👨‍💼</span>
+          {editable && <span style={{ fontSize: 11, color: '#6366f1', fontWeight: 600 }}>写真を追加</span>}
+        </div>
+      )}
+      {editable && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(0,0,0,0.45)',
+          opacity: 0, transition: 'opacity 0.2s',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }} className="group-hover:opacity-100">
+          <span style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>
+            {uploading ? 'アップロード中…' : src ? '写真を変更' : '写真を追加'}
+          </span>
+        </div>
+      )}
+      <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
+        onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = '' }} />
+    </div>
+  )
+}
+
+// ─── FAQ アコーディオン アイテム ──────────────────────────────────────────────
+
+function FaqItem({ question, answer, editable, onChangeQ, onChangeA }: {
+  question: string; answer: string; editable: boolean
+  onChangeQ: (v: string) => void; onChangeA: (v: string) => void
+}) {
+  const [open, setOpen] = useState(editable)
+
+  return (
+    <div style={{ borderTop: '1px solid #e5e7eb' }}>
+      <button
+        onClick={() => !editable && setOpen(o => !o)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+          padding: '24px 0', gap: 16, background: 'none', border: 'none',
+          cursor: editable ? 'default' : 'pointer', textAlign: 'left',
+        }}
+      >
+        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flex: 1 }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#6366f1', minWidth: 18, paddingTop: 2 }}>Q</span>
+          <ET as="p" value={question} onChange={editable ? onChangeQ : undefined}
+            style={{ fontSize: 16, fontWeight: 600, color: '#111827', lineHeight: 1.6, flex: 1, display: 'block' } as React.CSSProperties} />
+        </div>
+        {!editable && (
+          <span style={{ fontSize: 20, color: '#9ca3af', flexShrink: 0, marginTop: 2, transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s' }}>
+            +
+          </span>
+        )}
+      </button>
+      {(open || editable) && (
+        <div style={{ display: 'flex', gap: 16, paddingBottom: 24, alignItems: 'flex-start' }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#10b981', minWidth: 18, paddingTop: 2 }}>A</span>
+          <ET as="p" value={answer} onChange={editable ? onChangeA : undefined} multi
+            style={{ fontSize: 15, color: '#4b5563', lineHeight: 1.8, flex: 1, display: 'block' } as React.CSSProperties} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Contact フォーム ─────────────────────────────────────────────────────────
+
+function ContactForm({ siteSlug }: { siteSlug: string }) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
+  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm(p => ({ ...p, [k]: e.target.value }))
+
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!form.email && !form.phone) return
+    setStatus('sending')
+    try {
+      const res = await fetch(`/api/site/${siteSlug}/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      setStatus(res.ok ? 'done' : 'error')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '12px 16px', border: '1.5px solid #e5e7eb', borderRadius: 10,
+    fontSize: 14, color: '#111827', background: '#fff', outline: 'none', boxSizing: 'border-box',
+    fontFamily: 'inherit',
+  }
+
+  if (status === 'done') {
+    return (
+      <div style={{ textAlign: 'center', padding: '48px 0' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+        <p style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>送信完了しました</p>
+        <p style={{ fontSize: 14, color: '#6b7280' }}>1営業日以内にご連絡いたします。</p>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div>
+          <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+            お名前
+          </label>
+          <input value={form.name} onChange={set('name')} placeholder="山田 太郎" style={inputStyle} />
+        </div>
+        <div>
+          <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+            メールアドレス <span style={{ color: '#ef4444' }}>*</span>
+          </label>
+          <input type="email" value={form.email} onChange={set('email')} placeholder="example@mail.com" style={inputStyle} required />
+        </div>
+      </div>
+      <div>
+        <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+          電話番号（任意）
+        </label>
+        <input value={form.phone} onChange={set('phone')} placeholder="090-0000-0000" style={inputStyle} />
+      </div>
+      <div>
+        <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+          ご相談内容
+        </label>
+        <textarea value={form.message} onChange={set('message')} rows={5}
+          placeholder="例）建設業の許可申請について相談したいです。"
+          style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.7 }} />
+      </div>
+      {status === 'error' && (
+        <p style={{ fontSize: 13, color: '#ef4444' }}>送信に失敗しました。しばらくしてから再度お試しください。</p>
+      )}
+      <button type="submit" disabled={status === 'sending'}
+        style={{
+          background: '#6366f1', color: '#fff', fontWeight: 700,
+          padding: '14px', borderRadius: 10, fontSize: 15, border: 'none',
+          cursor: 'pointer', opacity: status === 'sending' ? 0.7 : 1,
+          letterSpacing: '-0.2px',
+        }}>
+        {status === 'sending' ? '送信中…' : '無料相談を申し込む'}
+      </button>
+      <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center' }}>
+        ご入力いただいた個人情報は、お問い合わせ対応のみに使用します。
+      </p>
+    </form>
+  )
+}
+
+// ─── デフォルト Pricing / Area / Testimonials ────────────────────────────────
+
+const DEFAULT_PRICING: PricingItem[] = [
+  { name: '会社設立', price: '¥110,000〜', features: ['書類作成・申請代行', '登記申請サポート', '設立後手続き相談'] },
+  { name: '建設業許可', price: '¥88,000〜', features: ['新規・更新・変更対応', '書類収集サポート', '申請窓口対応'] },
+  { name: '飲食店営業許可', price: '¥55,000〜', features: ['保健所申請代行', '図面作成補助', '開業前相談込み'] },
+]
+
+const DEFAULT_AREA: AreaContent = {
+  description: '地域に根ざした行政書士として、幅広いエリアのご相談に対応しています。',
+  areas: ['中央区', '千代田区', '港区', '新宿区', '渋谷区', '目黒区', '世田谷区', '品川区'],
+}
+
+const DEFAULT_TESTIMONIALS: TestimonialItem[] = [
+  { name: 'A様', role: '建設業許可申請', content: '複雑な書類も丁寧に説明してくださり、スムーズに許可を取得できました。' },
+  { name: 'B様', role: '会社設立', content: '設立から開業後の手続きまでトータルでサポートいただき、安心して任せられました。' },
+  { name: 'C様', role: 'ビザ申請', content: '不安な手続きも的確にフォローしていただき、無事に在留資格を取得できました。' },
+]
+
+// ─── Props ───────────────────────────────────────────────────────────────────
+
+interface SiteTemplateProps {
+  firmName: string
+  prefecture: string
+  siteSlug: string
+  content: SiteContent
+  editable?: boolean
+  onUpdate?: (c: SiteContent) => void
+}
+
+// ─── SiteTemplate ─────────────────────────────────────────────────────────────
+
+export function SiteTemplate({
+  firmName, prefecture, siteSlug, content, editable = false, onUpdate,
+}: SiteTemplateProps) {
+  const { hero, services, profile, faq, cta } = content
+  const pricing = content.pricing ?? DEFAULT_PRICING
+  const area = content.area ?? DEFAULT_AREA
+  const testimonials = content.testimonials ?? DEFAULT_TESTIMONIALS
+
+  const cb = editable && onUpdate ? onUpdate : undefined
+
+  const upHero     = (k: keyof typeof hero,    v: string) => cb?.({ ...content, hero:    { ...hero,    [k]: v } })
+  const upCta      = (k: keyof typeof cta,     v: string) => cb?.({ ...content, cta:     { ...cta,     [k]: v } })
+  const upProfile  = (k: keyof typeof profile, v: string) => cb?.({ ...content, profile: { ...profile, [k]: v } })
+  const upService  = (i: number, k: keyof (typeof services)[0], v: string) => {
+    const next = services.map((s, idx) => idx === i ? { ...s, [k]: v } : s)
+    cb?.({ ...content, services: next })
+  }
+  const upStrength = (i: number, v: string) => {
+    const next = profile.strengths.map((s, idx) => idx === i ? v : s)
+    cb?.({ ...content, profile: { ...profile, strengths: next } })
+  }
+  const upFaq = (i: number, k: 'question' | 'answer', v: string) => {
+    const next = faq.map((f, idx) => idx === i ? { ...f, [k]: v } : f)
+    cb?.({ ...content, faq: next })
+  }
+  const upPricing = (i: number, k: keyof PricingItem, v: string | string[]) => {
+    const next = pricing.map((p, idx) => idx === i ? { ...p, [k]: v } : p)
+    cb?.({ ...content, pricing: next })
+  }
+  const upPricingFeature = (pi: number, fi: number, v: string) => {
+    const next = pricing.map((p, idx) => idx === pi ? {
+      ...p, features: p.features.map((f, fidx) => fidx === fi ? v : f)
+    } : p)
+    cb?.({ ...content, pricing: next })
+  }
+  const upArea = (k: keyof AreaContent, v: string) => {
+    cb?.({ ...content, area: { ...area, [k]: v } })
+  }
+  const upTestimonial = (i: number, k: keyof TestimonialItem, v: string) => {
+    const next = testimonials.map((t, idx) => idx === i ? { ...t, [k]: v } : t)
+    cb?.({ ...content, testimonials: next })
+  }
+
+  // ── スタイル定数 ────────────────────────────────────────────────────────────
+  const sectionLabel: React.CSSProperties = {
+    fontSize: 11, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase' as const,
+    color: '#6366f1', marginBottom: 12, display: 'block',
+  }
+  const sectionTitle: React.CSSProperties = {
+    fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, color: '#111827',
+  }
+  const container: React.CSSProperties = { maxWidth: 1100, margin: '0 auto', padding: '0 32px' }
+
+  return (
+    <div style={{ fontFamily: "'Inter', 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif", color: '#111827', background: '#fff' }}>
+
+      {/* ── Header ── */}
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 40,
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid #f3f4f6',
+      }}>
+        <div style={{ ...container, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 34, height: 34, borderRadius: 8,
+              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <span style={{ color: '#fff', fontSize: 13, fontWeight: 800 }}>法</span>
+            </div>
+            <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.3px', color: '#111827' }}>{firmName}</span>
+          </div>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+            {[
+              ['#about', '当事務所について'],
+              ['#services', 'サービス'],
+              ['#faq', 'よくある質問'],
+              ['#testimonials', 'お客様の声'],
+              ['#contact', 'お問い合わせ'],
+            ].map(([href, label]) => (
+              <a key={href} href={href}
+                style={{ fontSize: 13, color: '#6b7280', fontWeight: 500, textDecoration: 'none', letterSpacing: '0.1px' }}
+                className="hover:text-gray-900 transition-colors hidden md:block"
+              >{label}</a>
+            ))}
+            <a href="#contact" style={{
+              fontSize: 13, fontWeight: 700, padding: '8px 20px', borderRadius: 100,
+              background: '#6366f1', color: '#fff', textDecoration: 'none',
+              boxShadow: '0 2px 10px rgba(99,102,241,0.25)',
+            }}>
+              無料相談
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      {/* ── Hero ── */}
+      <section style={{
+        background: 'linear-gradient(150deg, #f0f4ff 0%, #fafffe 50%, #fdf6ff 100%)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: -160, right: -160,
+          width: 560, height: 560, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -100, left: -100,
+          width: 400, height: 400, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ ...container, padding: '100px 32px 120px', position: 'relative' }}>
+          <div style={{ marginBottom: 24 }}>
+            <span style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const,
+              color: '#6366f1', background: 'rgba(99,102,241,0.08)',
+              padding: '5px 14px', borderRadius: 100, border: '1px solid rgba(99,102,241,0.15)',
+            }}>
+              {prefecture}の行政書士
+            </span>
+          </div>
+
+          <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi
+            className="block"
+            style={{
+              fontSize: 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800,
+              lineHeight: 1.1, letterSpacing: '-2px', color: '#1e1b4b',
+              marginBottom: 24, maxWidth: 780,
+            } as React.CSSProperties}
+          />
+
+          <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi
+            className="block"
+            style={{ fontSize: 17, color: '#4b5563', lineHeight: 1.8, maxWidth: 520, marginBottom: 44, fontWeight: 400 } as React.CSSProperties}
+          />
+
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <a href="#contact" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: '#6366f1', color: '#fff', fontWeight: 700,
+              padding: '14px 28px', borderRadius: 100, fontSize: 15,
+              textDecoration: 'none', letterSpacing: '-0.3px',
+              boxShadow: '0 4px 20px rgba(99,102,241,0.28)',
+            }}>
+              <ET value={hero.ctaText} onChange={v => upHero('ctaText', v)} style={{ pointerEvents: 'none' } as React.CSSProperties} />
+              <span>→</span>
+            </a>
+            <a href="tel:0120000000" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              border: '1.5px solid #c7d2fe', color: '#4338ca',
+              fontWeight: 600, padding: '13px 24px', borderRadius: 100, fontSize: 14,
+              textDecoration: 'none', background: 'rgba(255,255,255,0.7)',
+            }}>
+              📞 お電話でのご相談
+            </a>
+          </div>
+          {hero.ctaNote && (
+            <ET as="p" value={hero.ctaNote} onChange={v => upHero('ctaNote', v)} multi
+              className="block"
+              style={{ marginTop: 20, fontSize: 12, color: '#9ca3af', letterSpacing: '0.3px' } as React.CSSProperties}
+            />
+          )}
+        </div>
+      </section>
+
+      {/* ── 強み 3バッジ ── */}
+      <section style={{ background: '#fafafa', borderTop: '1px solid #f3f4f6', borderBottom: '1px solid #f3f4f6' }}>
+        <div style={{ ...container, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
+          {profile.strengths.slice(0, 3).map((s, i) => (
+            <div key={i} style={{
+              padding: '28px 24px',
+              borderRight: i < 2 ? '1px solid #f3f4f6' : undefined,
+              display: 'flex', alignItems: 'center', gap: 14,
+            }}>
+              <span style={{ fontSize: 22 }}>{['⚡', '🤝', '🏆'][i]}</span>
+              <ET as="span" value={s} onChange={v => upStrength(i, v)}
+                style={{ fontSize: 14, fontWeight: 600, color: '#374151', letterSpacing: '-0.2px' } as React.CSSProperties}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── About（当事務所について） ── */}
+      <section id="about" style={{ padding: '96px 32px', background: '#fff' }}>
+        <div style={{ ...container, padding: '0 32px' }}>
+          <span style={sectionLabel}>About</span>
+          <ET as="h2" value={profile.title} onChange={v => upProfile('title', v)}
+            style={{ ...sectionTitle, marginBottom: 56, display: 'block' } as React.CSSProperties}
+          />
+
+          <div style={{
+            display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56, alignItems: 'start',
+            background: '#f9fafb', borderRadius: 20, padding: '48px',
+            border: '1px solid #e5e7eb',
+          }}>
+            <ProfilePhotoUpload
+              src={profile.profilePhotoUrl}
+              editable={editable}
+              onChange={url => cb?.({ ...content, profile: { ...profile, profilePhotoUrl: url } })}
+            />
+            <div>
+              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, letterSpacing: '-0.5px', color: '#111827' }}>{firmName}</h3>
+              <p style={{ fontSize: 13, color: '#6366f1', fontWeight: 600, marginBottom: 20, letterSpacing: '0.3px' }}>{prefecture}の行政書士</p>
+              <ET as="p" value={profile.body} onChange={v => upProfile('body', v)} multi
+                style={{ fontSize: 15, color: '#374151', lineHeight: 1.95, display: 'block', marginBottom: 24 } as React.CSSProperties}
+              />
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {profile.strengths.map((s, i) => (
+                  <span key={i} style={{
+                    fontSize: 12, fontWeight: 600, color: '#6366f1',
+                    background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.15)',
+                    padding: '5px 12px', borderRadius: 100,
+                  }}>{s}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Services（サービス内容） ── */}
+      <section id="services" style={{ padding: '96px 32px', background: '#f9fafb' }}>
+        <div style={{ ...container, padding: '0 32px' }}>
+          <span style={sectionLabel}>Services</span>
+          <h2 style={{ ...sectionTitle, marginBottom: 56 }}>サービス内容</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+            {services.map((svc, i) => (
+              <div key={i} style={{
+                background: '#fff', borderRadius: 16, padding: '32px 28px',
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              }}>
+                <ET as="div" value={svc.icon} onChange={v => upService(i, 'icon', v)}
+                  style={{ fontSize: 36, marginBottom: 16, display: 'block' } as React.CSSProperties} />
+                <ET as="h3" value={svc.name} onChange={v => upService(i, 'name', v)}
+                  style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, letterSpacing: '-0.3px', display: 'block', color: '#111827' } as React.CSSProperties} />
+                <ET as="p" value={svc.description} onChange={v => upService(i, 'description', v)} multi
+                  style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.75, marginBottom: 16, display: 'block' } as React.CSSProperties} />
+                {svc.price && (
+                  <div style={{
+                    borderTop: '1px solid #f3f4f6', paddingTop: 14, display: 'flex', alignItems: 'center', gap: 6,
+                  }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af' }}>料金目安</span>
+                    <ET as="span" value={svc.price} onChange={v => upService(i, 'price', v)}
+                      style={{ fontSize: 14, fontWeight: 700, color: '#6366f1' } as React.CSSProperties} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Pricing（料金の目安） ── */}
+      <section id="pricing" style={{ padding: '96px 32px', background: '#fff' }}>
+        <div style={{ ...container, padding: '0 32px' }}>
+          <span style={sectionLabel}>Pricing</span>
+          <h2 style={{ ...sectionTitle, marginBottom: 12 }}>料金の目安</h2>
+          <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 56 }}>
+            ※ 料金は内容により異なる場合があります。まずはお気軽にご相談ください。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20, marginBottom: 48 }}>
+            {pricing.map((plan, i) => (
+              <div key={i} style={{
+                background: i === 1 ? '#6366f1' : '#f9fafb',
+                borderRadius: 20, padding: '36px 32px',
+                border: i === 1 ? 'none' : '1px solid #e5e7eb',
+                position: 'relative',
+                boxShadow: i === 1 ? '0 8px 32px rgba(99,102,241,0.25)' : '0 1px 4px rgba(0,0,0,0.04)',
+              }}>
+                {i === 1 && (
+                  <div style={{
+                    position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
+                    background: '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 800,
+                    padding: '4px 14px', borderRadius: 100, letterSpacing: '0.5px',
+                  }}>人気</div>
+                )}
+                <ET as="h3" value={plan.name} onChange={v => upPricing(i, 'name', v)}
+                  style={{ fontSize: 17, fontWeight: 700, marginBottom: 8, display: 'block', color: i === 1 ? '#fff' : '#111827' } as React.CSSProperties} />
+                <ET as="div" value={plan.price} onChange={v => upPricing(i, 'price', v)}
+                  style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-1px', marginBottom: 24, display: 'block', color: i === 1 ? '#fff' : '#6366f1' } as React.CSSProperties} />
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 0 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {plan.features.map((feat, fi) => (
+                    <li key={fi} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <span style={{ color: i === 1 ? 'rgba(255,255,255,0.7)' : '#10b981', fontSize: 14, marginTop: 1, flexShrink: 0 }}>✓</span>
+                      <ET as="span" value={feat} onChange={v => upPricingFeature(i, fi, v)}
+                        style={{ fontSize: 13, lineHeight: 1.6, color: i === 1 ? 'rgba(255,255,255,0.9)' : '#4b5563' } as React.CSSProperties} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <a href="#contact" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              border: '2px solid #6366f1', color: '#6366f1', fontWeight: 700,
+              padding: '13px 32px', borderRadius: 100, fontSize: 15, textDecoration: 'none',
+            }}>
+              無料相談はこちら →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Area（対応エリア） ── */}
+      <section id="area" style={{ padding: '80px 32px', background: '#f9fafb', borderTop: '1px solid #f3f4f6' }}>
+        <div style={{ ...container, padding: '0 32px' }}>
+          <span style={sectionLabel}>Area</span>
+          <h2 style={{ ...sectionTitle, marginBottom: 20 }}>対応エリア</h2>
+          <ET as="p" value={area.description} onChange={v => upArea('description', v)} multi
+            style={{ fontSize: 15, color: '#6b7280', marginBottom: 36, lineHeight: 1.7, display: 'block' } as React.CSSProperties}
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {area.areas.map((a, i) => (
+              <span key={i} style={{
+                fontSize: 13, fontWeight: 600, color: '#374151',
+                background: '#fff', border: '1.5px solid #e5e7eb',
+                padding: '8px 18px', borderRadius: 100,
+              }}>
+                {a}
+              </span>
+            ))}
+          </div>
+          <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 24 }}>
+            ※ 上記以外のエリアもご相談ください。オンライン対応も承っています。
+          </p>
+        </div>
+      </section>
+
+      {/* ── Testimonials（お客様の声） ── */}
+      <section id="testimonials" style={{ padding: '96px 32px', background: '#fff' }}>
+        <div style={{ ...container, padding: '0 32px' }}>
+          <span style={sectionLabel}>Testimonials</span>
+          <h2 style={{ ...sectionTitle, marginBottom: 56 }}>お客様の声</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+            {testimonials.map((t, i) => (
+              <div key={i} style={{
+                background: '#f9fafb', borderRadius: 16, padding: '32px 28px',
+                border: '1px solid #e5e7eb',
+              }}>
+                <div style={{ fontSize: 28, color: '#c7d2fe', marginBottom: 16, lineHeight: 1 }}>&ldquo;</div>
+                <ET as="p" value={t.content} onChange={v => upTestimonial(i, 'content', v)} multi
+                  style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginBottom: 24, display: 'block' } as React.CSSProperties}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderTop: '1px solid #e5e7eb', paddingTop: 20 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 18, flexShrink: 0,
+                  }}>👤</div>
+                  <div>
+                    <ET as="div" value={t.name} onChange={v => upTestimonial(i, 'name', v)}
+                      style={{ fontSize: 13, fontWeight: 700, color: '#111827', display: 'block' } as React.CSSProperties} />
+                    <ET as="div" value={t.role} onChange={v => upTestimonial(i, 'role', v)}
+                      style={{ fontSize: 12, color: '#9ca3af', display: 'block' } as React.CSSProperties} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 11, color: '#c4c4c4', marginTop: 24, textAlign: 'center' }}>
+            ※ お客様の声は掲載許諾のもと掲載しています。
+          </p>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section id="faq" style={{ padding: '96px 32px', background: '#f9fafb' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 32px' }}>
+          <span style={sectionLabel}>FAQ</span>
+          <h2 style={{ ...sectionTitle, marginBottom: 56 }}>よくある質問</h2>
+          <div>
+            {faq.map((item, i) => (
+              <FaqItem
+                key={i}
+                question={item.question}
+                answer={item.answer}
+                editable={editable}
+                onChangeQ={v => upFaq(i, 'question', v)}
+                onChangeA={v => upFaq(i, 'answer', v)}
+              />
+            ))}
+            <div style={{ borderTop: '1px solid #e5e7eb' }} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{
+        padding: '96px 32px',
+        background: 'linear-gradient(135deg, #f0f4ff 0%, #fdf6ff 100%)',
+        borderTop: '1px solid #e8ecff',
+      }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+          <ET as="h2" value={cta.headline} onChange={v => upCta('headline', v)}
+            style={{ fontSize: 44, fontWeight: 800, letterSpacing: '-2px', marginBottom: 16, lineHeight: 1.1, display: 'block', color: '#1e1b4b' } as React.CSSProperties}
+          />
+          <ET as="p" value={cta.subheadline} onChange={v => upCta('subheadline', v)} multi
+            style={{ fontSize: 16, color: '#6b7280', lineHeight: 1.75, marginBottom: 44, display: 'block' } as React.CSSProperties}
+          />
+          <a href="#contact" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: '#6366f1', color: '#fff', fontWeight: 700,
+            padding: '16px 36px', borderRadius: 100, fontSize: 16, textDecoration: 'none',
+            letterSpacing: '-0.3px', boxShadow: '0 4px 24px rgba(99,102,241,0.3)',
+          }}>
+            <ET value={cta.ctaText} onChange={v => upCta('ctaText', v)} style={{ pointerEvents: 'none' } as React.CSSProperties} />
+            <span style={{ fontSize: 20 }}>→</span>
+          </a>
+        </div>
+      </section>
+
+      {/* ── Contact（お問い合わせ） ── */}
+      <section id="contact" style={{ padding: '96px 32px', background: '#fff' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+          <span style={sectionLabel}>Contact</span>
+          <h2 style={{ ...sectionTitle, marginBottom: 8 }}>お問い合わせ</h2>
+          <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 48 }}>
+            24時間受付 · 1営業日以内にご返信します
+          </p>
+          {editable ? (
+            <div style={{
+              background: '#f9fafb', borderRadius: 16, padding: '40px',
+              textAlign: 'center', border: '2px dashed #e5e7eb',
+            }}>
+              <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 8 }}>お問い合わせフォームは公開ページで動作します</p>
+              <a href={`/site/${siteSlug}`} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 13, color: '#6366f1', textDecoration: 'none', fontWeight: 600 }}>
+                公開ページで確認 →
+              </a>
+            </div>
+          ) : (
+            <ContactForm siteSlug={siteSlug} />
+          )}
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer style={{ padding: '48px 32px', background: '#f9fafb', borderTop: '1px solid #f3f4f6', textAlign: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 6,
+            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span style={{ color: '#fff', fontSize: 11, fontWeight: 800 }}>法</span>
+          </div>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#111827', letterSpacing: '-0.3px' }}>{firmName}</p>
+        </div>
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>{prefecture}の行政書士</p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 24 }}>
+          {[['#about', '事務所について'], ['#services', 'サービス'], ['#faq', 'FAQ'], ['#contact', 'お問い合わせ']].map(([href, label]) => (
+            <a key={href} href={href} style={{ fontSize: 12, color: '#9ca3af', textDecoration: 'none' }}>{label}</a>
+          ))}
+        </div>
+        <p style={{ fontSize: 11, color: '#d1d5db' }}>© {new Date().getFullYear()} {firmName}. All rights reserved.</p>
+      </footer>
+    </div>
+  )
+}
