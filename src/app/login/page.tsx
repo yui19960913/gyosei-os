@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
 
 function LoginForm() {
   const router = useRouter()
@@ -20,18 +18,20 @@ function LoginForm() {
     setLoading(true)
     setError('')
 
-    const res = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     })
 
     setLoading(false)
 
-    if (res?.error) {
-      setError('メールアドレスまたはパスワードが正しくありません')
+    if (!res.ok) {
+      const data = await res.json() as { error?: string }
+      setError(data.error ?? 'ログインに失敗しました')
     } else {
       router.push(callbackUrl)
+      router.refresh()
     }
   }
 

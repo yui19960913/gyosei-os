@@ -1,16 +1,16 @@
-import { auth } from '@/auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { verifySessionToken } from '@/lib/session'
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth
-  const { pathname } = req.nextUrl
+export default function proxy(req: NextRequest) {
+  const token = req.cookies.get('session')?.value
+  const session = token ? verifySessionToken(token) : null
 
-  if (!isLoggedIn) {
+  if (!session) {
     const loginUrl = new URL('/login', req.url)
-    loginUrl.searchParams.set('callbackUrl', pathname)
+    loginUrl.searchParams.set('callbackUrl', req.nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
   }
-})
+}
 
 export const config = {
   matcher: ['/dashboard/:path*'],
