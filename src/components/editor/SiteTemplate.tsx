@@ -247,11 +247,6 @@ const DEFAULT_AREA: AreaContent = {
   areas: ['中央区', '千代田区', '港区', '新宿区', '渋谷区', '目黒区', '世田谷区', '品川区'],
 }
 
-const DEFAULT_TESTIMONIALS: TestimonialItem[] = [
-  { name: 'A様', role: '建設業許可申請', content: '複雑な書類も丁寧に説明してくださり、スムーズに許可を取得できました。' },
-  { name: 'B様', role: '会社設立', content: '設立から開業後の手続きまでトータルでサポートいただき、安心して任せられました。' },
-  { name: 'C様', role: 'ビザ申請', content: '不安な手続きも的確にフォローしていただき、無事に在留資格を取得できました。' },
-]
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -272,7 +267,7 @@ export function SiteTemplate({
   const { hero, services, profile, faq, cta } = content
   const pricing = content.pricing ?? DEFAULT_PRICING
   const area = content.area ?? DEFAULT_AREA
-  const testimonials = content.testimonials ?? DEFAULT_TESTIMONIALS
+  const testimonials = content.testimonials ?? []
 
   const cb = editable && onUpdate ? onUpdate : undefined
 
@@ -346,7 +341,7 @@ export function SiteTemplate({
               ['#about', '当事務所について'],
               ['#services', 'サービス'],
               ['#faq', 'よくある質問'],
-              ['#testimonials', 'お客様の声'],
+              ...(testimonials.length > 0 ? [['#testimonials', 'お客様の声']] : []),
               ['#contact', 'お問い合わせ'],
             ].map(([href, label]) => (
               <a key={href} href={href}
@@ -604,42 +599,44 @@ export function SiteTemplate({
       </section>
 
       {/* ── Testimonials（お客様の声） ── */}
-      <section id="testimonials" style={{ padding: '96px 32px', background: '#fff' }}>
-        <div style={{ ...container, padding: '0 32px' }}>
-          <span style={sectionLabel}>Testimonials</span>
-          <h2 style={{ ...sectionTitle, marginBottom: 56 }}>お客様の声</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
-            {testimonials.map((t, i) => (
-              <div key={i} style={{
-                background: '#f9fafb', borderRadius: 16, padding: '32px 28px',
-                border: '1px solid #e5e7eb',
-              }}>
-                <div style={{ fontSize: 28, color: '#c7d2fe', marginBottom: 16, lineHeight: 1 }}>&ldquo;</div>
-                <ET as="p" value={t.content} onChange={v => upTestimonial(i, 'content', v)} multi
-                  style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginBottom: 24, display: 'block' } as React.CSSProperties}
-                />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderTop: '1px solid #e5e7eb', paddingTop: 20 }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 18, flexShrink: 0,
-                  }}>👤</div>
-                  <div>
-                    <ET as="div" value={t.name} onChange={v => upTestimonial(i, 'name', v)}
-                      style={{ fontSize: 13, fontWeight: 700, color: '#111827', display: 'block' } as React.CSSProperties} />
-                    <ET as="div" value={t.role} onChange={v => upTestimonial(i, 'role', v)}
-                      style={{ fontSize: 12, color: '#9ca3af', display: 'block' } as React.CSSProperties} />
+      {testimonials.length > 0 && (
+        <section id="testimonials" style={{ padding: '96px 32px', background: '#fff' }}>
+          <div style={{ ...container, padding: '0 32px' }}>
+            <span style={sectionLabel}>Testimonials</span>
+            <h2 style={{ ...sectionTitle, marginBottom: 56 }}>お客様の声</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+              {testimonials.map((t, i) => (
+                <div key={i} style={{
+                  background: '#f9fafb', borderRadius: 16, padding: '32px 28px',
+                  border: '1px solid #e5e7eb',
+                }}>
+                  <div style={{ fontSize: 28, color: '#c7d2fe', marginBottom: 16, lineHeight: 1 }}>&ldquo;</div>
+                  <ET as="p" value={t.content} onChange={v => upTestimonial(i, 'content', v)} multi
+                    style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginBottom: 24, display: 'block' } as React.CSSProperties}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderTop: '1px solid #e5e7eb', paddingTop: 20 }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 18, flexShrink: 0,
+                    }}>👤</div>
+                    <div>
+                      <ET as="div" value={t.name} onChange={v => upTestimonial(i, 'name', v)}
+                        style={{ fontSize: 13, fontWeight: 700, color: '#111827', display: 'block' } as React.CSSProperties} />
+                      <ET as="div" value={t.role} onChange={v => upTestimonial(i, 'role', v)}
+                        style={{ fontSize: 12, color: '#9ca3af', display: 'block' } as React.CSSProperties} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: '#c4c4c4', marginTop: 24, textAlign: 'center' }}>
+              ※ お客様の声は掲載許諾のもと掲載しています。
+            </p>
           </div>
-          <p style={{ fontSize: 11, color: '#c4c4c4', marginTop: 24, textAlign: 'center' }}>
-            ※ お客様の声は掲載許諾のもと掲載しています。
-          </p>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── FAQ ── */}
       <section id="faq" style={{ padding: '96px 32px', background: '#f9fafb' }}>
@@ -701,7 +698,7 @@ export function SiteTemplate({
               textAlign: 'center', border: '2px dashed #e5e7eb',
             }}>
               <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 8 }}>お問い合わせフォームは公開ページで動作します</p>
-              <a href={`/site/${siteSlug}`} target="_blank" rel="noopener noreferrer"
+              <a href={`/${siteSlug}`} target="_blank" rel="noopener noreferrer"
                 style={{ fontSize: 13, color: '#6366f1', textDecoration: 'none', fontWeight: 600 }}>
                 公開ページで確認 →
               </a>

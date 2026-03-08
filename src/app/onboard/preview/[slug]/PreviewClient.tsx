@@ -134,7 +134,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
     try {
       const res = await fetch(`/api/dashboard/${slug}/publish`, { method: 'POST' })
       if (res.ok) {
-        router.push(`/site/${slug}`)
+        router.push(`/${slug}`)
       } else {
         alert('公開に失敗しました。もう一度お試しください。')
       }

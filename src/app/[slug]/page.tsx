@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
-import { SitePageRenderer } from '@/components/site/SitePageRenderer'
+import { SiteTemplate } from '@/components/editor/SiteTemplate'
 import type { SiteContent } from '@/lib/ai-site/types'
 
 interface Props {
@@ -33,11 +33,12 @@ export default async function PublicSitePage({ params }: Props) {
   const content = site.siteContent as unknown as SiteContent
 
   return (
-    <SitePageRenderer
+    <SiteTemplate
       firmName={site.firmName}
       prefecture={site.prefecture}
       content={content}
       siteSlug={slug}
+      editable={false}
     />
   )
 }
