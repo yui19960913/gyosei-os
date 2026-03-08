@@ -187,7 +187,7 @@ function ContactForm({ siteSlug }: { siteSlug: string }) {
 
   return (
     <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div className="st-form-row">
         <div>
           <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
             お名前
@@ -312,7 +312,7 @@ export function SiteTemplate({
   const sectionTitle: React.CSSProperties = {
     fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, color: '#111827',
   }
-  const container: React.CSSProperties = { maxWidth: 1100, margin: '0 auto', padding: '0 32px' }
+  const container: React.CSSProperties = { maxWidth: 1100, margin: '0 auto' }
 
   return (
     <div style={{ fontFamily: "'Inter', 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif", color: '#111827', background: '#fff' }}>
@@ -325,7 +325,7 @@ export function SiteTemplate({
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid #f3f4f6',
       }}>
-        <div style={{ ...container, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="st-container" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 34, height: 34, borderRadius: 8,
@@ -378,7 +378,7 @@ export function SiteTemplate({
           pointerEvents: 'none',
         }} />
 
-        <div style={{ ...container, padding: '100px 32px 120px', position: 'relative' }}>
+        <div className="st-container st-hero-inner">
           <div style={{ marginBottom: 24 }}>
             <span style={{
               display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const,
@@ -434,7 +434,7 @@ export function SiteTemplate({
 
       {/* ── 強み 3バッジ ── */}
       <section style={{ background: '#fafafa', borderTop: '1px solid #f3f4f6', borderBottom: '1px solid #f3f4f6' }}>
-        <div style={{ ...container, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
+        <div className="st-container st-strengths-grid">
           {profile.strengths.slice(0, 3).map((s, i) => (
             <div key={i} style={{
               padding: '28px 24px',
@@ -451,18 +451,14 @@ export function SiteTemplate({
       </section>
 
       {/* ── About（当事務所について） ── */}
-      <section id="about" style={{ padding: '96px 32px', background: '#fff' }}>
-        <div style={{ ...container, padding: '0 32px' }}>
+      <section id="about" className="st-section" style={{ background: '#fff' }}>
+        <div className="st-container">
           <span style={sectionLabel}>About</span>
           <ET as="h2" value={profile.title} onChange={v => upProfile('title', v)}
             style={{ ...sectionTitle, marginBottom: 56, display: 'block' } as React.CSSProperties}
           />
 
-          <div style={{
-            display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56, alignItems: 'start',
-            background: '#f9fafb', borderRadius: 20, padding: '48px',
-            border: '1px solid #e5e7eb',
-          }}>
+          <div className="st-about-grid">
             <ProfilePhotoUpload
               src={profile.profilePhotoUrl}
               editable={editable}
@@ -489,11 +485,11 @@ export function SiteTemplate({
       </section>
 
       {/* ── Services（サービス内容） ── */}
-      <section id="services" style={{ padding: '96px 32px', background: '#f9fafb' }}>
-        <div style={{ ...container, padding: '0 32px' }}>
+      <section id="services" className="st-section" style={{ background: '#f9fafb' }}>
+        <div className="st-container">
           <span style={sectionLabel}>Services</span>
           <h2 style={{ ...sectionTitle, marginBottom: 56 }}>サービス内容</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+          <div className="st-services-grid">
             {services.map((svc, i) => (
               <div key={i} style={{
                 background: '#fff', borderRadius: 16, padding: '32px 28px',
@@ -522,14 +518,14 @@ export function SiteTemplate({
       </section>
 
       {/* ── Pricing（料金の目安） ── */}
-      <section id="pricing" style={{ padding: '96px 32px', background: '#fff' }}>
-        <div style={{ ...container, padding: '0 32px' }}>
+      <section id="pricing" className="st-section" style={{ background: '#fff' }}>
+        <div className="st-container">
           <span style={sectionLabel}>Pricing</span>
           <h2 style={{ ...sectionTitle, marginBottom: 12 }}>料金の目安</h2>
           <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 56 }}>
             ※ 料金は内容により異なる場合があります。まずはお気軽にご相談ください。
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20, marginBottom: 48 }}>
+          <div className="st-pricing-grid">
             {pricing.map((plan, i) => (
               <div key={i} style={{
                 background: i === 1 ? '#6366f1' : '#f9fafb',
@@ -574,8 +570,8 @@ export function SiteTemplate({
       </section>
 
       {/* ── Area（対応エリア） ── */}
-      <section id="area" style={{ padding: '80px 32px', background: '#f9fafb', borderTop: '1px solid #f3f4f6' }}>
-        <div style={{ ...container, padding: '0 32px' }}>
+      <section id="area" className="st-section" style={{ background: '#f9fafb', borderTop: '1px solid #f3f4f6' }}>
+        <div className="st-container">
           <span style={sectionLabel}>Area</span>
           <h2 style={{ ...sectionTitle, marginBottom: 20 }}>対応エリア</h2>
           <ET as="p" value={area.description} onChange={v => upArea('description', v)} multi
@@ -600,11 +596,11 @@ export function SiteTemplate({
 
       {/* ── Testimonials（お客様の声） ── */}
       {testimonials.length > 0 && (
-        <section id="testimonials" style={{ padding: '96px 32px', background: '#fff' }}>
-          <div style={{ ...container, padding: '0 32px' }}>
+        <section id="testimonials" className="st-section" style={{ background: '#fff' }}>
+          <div className="st-container">
             <span style={sectionLabel}>Testimonials</span>
             <h2 style={{ ...sectionTitle, marginBottom: 56 }}>お客様の声</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+            <div className="st-testimonials-grid">
               {testimonials.map((t, i) => (
                 <div key={i} style={{
                   background: '#f9fafb', borderRadius: 16, padding: '32px 28px',
@@ -639,8 +635,8 @@ export function SiteTemplate({
       )}
 
       {/* ── FAQ ── */}
-      <section id="faq" style={{ padding: '96px 32px', background: '#f9fafb' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 32px' }}>
+      <section id="faq" className="st-section" style={{ background: '#f9fafb' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }} className="st-container">
           <span style={sectionLabel}>FAQ</span>
           <h2 style={{ ...sectionTitle, marginBottom: 56 }}>よくある質問</h2>
           <div>
@@ -660,8 +656,7 @@ export function SiteTemplate({
       </section>
 
       {/* ── CTA ── */}
-      <section style={{
-        padding: '96px 32px',
+      <section className="st-section" style={{
         background: 'linear-gradient(135deg, #f0f4ff 0%, #fdf6ff 100%)',
         borderTop: '1px solid #e8ecff',
       }}>
@@ -685,7 +680,7 @@ export function SiteTemplate({
       </section>
 
       {/* ── Contact（お問い合わせ） ── */}
-      <section id="contact" style={{ padding: '96px 32px', background: '#fff' }}>
+      <section id="contact" className="st-section" style={{ background: '#fff' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <span style={sectionLabel}>Contact</span>
           <h2 style={{ ...sectionTitle, marginBottom: 8 }}>お問い合わせ</h2>
@@ -710,7 +705,7 @@ export function SiteTemplate({
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ padding: '48px 32px', background: '#f9fafb', borderTop: '1px solid #f3f4f6', textAlign: 'center' }}>
+      <footer className="st-container" style={{ padding: '48px 0', background: '#f9fafb', borderTop: '1px solid #f3f4f6', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 6,
