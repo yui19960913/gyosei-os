@@ -56,7 +56,7 @@ export async function sendLeadNotificationEmail({
   lead: { name?: string | null; email?: string | null; phone?: string | null; message?: string | null }
 }): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const fromAddress = process.env.RESEND_FROM ?? process.env.RESEND_FROM_EMAIL ?? 'noreply@example.com'
+  const fromAddress = process.env.RESEND_FROM ?? 'onboarding@resend.dev'
 
   const body = [
     `【${firmName}】に新しい問い合わせが届きました。`,
@@ -89,12 +89,13 @@ export async function sendAutoReplyEmail({
   firmName: string
   replyText: string
 }): Promise<boolean> {
-  // Resend の fromAddress は環境変数 or デフォルト
-  // .env の RESEND_FROM または RESEND_FROM_EMAIL どちらでも動作する
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const fromAddress = process.env.RESEND_FROM ?? process.env.RESEND_FROM_EMAIL ?? 'noreply@example.com'
+  // RESEND_FROM が未設定の場合は Resend 共有ドメインを使用
+  const fromAddress = process.env.RESEND_FROM ?? 'onboarding@resend.dev'
 
-  const { error } = await resend.emails.send({
+  console.log(`[AutoReply] 送信開始: to=${to} from=${fromAddress}`)
+
+  const { data, error } = await resend.emails.send({
     from: `${firmName} <${fromAddress}>`,
     to,
     subject: `【${firmName}】お問い合わせありがとうございます`,
@@ -102,8 +103,9 @@ export async function sendAutoReplyEmail({
   })
 
   if (error) {
-    console.error('[AutoReply] メール送信エラー:', error)
+    console.error('[AutoReply] メール送信エラー:', JSON.stringify(error))
     return false
   }
+  console.log(`[AutoReply] 送信成功: id=${data?.id}`)
   return true
 }

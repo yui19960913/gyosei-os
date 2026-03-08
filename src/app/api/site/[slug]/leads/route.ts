@@ -54,51 +54,58 @@ export async function POST(req: NextRequest, { params }: Params) {
     },
   })
 
-  // ── オーナーへの通知メール ─────────────────────────────────
+  // ── メール送信（await で確実に実行） ──────────────────────
+  // Vercel Serverless はレスポンス返却後に関数が終了するため
+  // fire-and-forget ではメール送信がキャンセルされる。必ず await する。
+
+  const emailTasks: Promise<unknown>[] = []
+
+  // オーナーへの通知
   if (site.ownerEmail) {
-    void sendLeadNotificationEmail({
-      ownerEmail: site.ownerEmail,
-      firmName: site.firmName,
-      lead: { name, email, phone, message },
-    }).catch(err => console.error('[LeadNotify] 通知失敗:', err))
+    emailTasks.push(
+      sendLeadNotificationEmail({
+        ownerEmail: site.ownerEmail,
+        firmName: site.firmName,
+        lead: { name, email, phone, message },
+      }).catch(err => console.error('[LeadNotify] 通知失敗:', err))
+    )
   }
 
-  // ── AIコスト制御 ───────────────────────────────────────────
-  // 自動返信AIは「新規リード作成時のみ」呼び出す。
-  // autoReplySent=true になったリードには再生成しない。
-  // チャット画面を開くたびに AI を呼ばない（LeadMessage.autoReplyText をDBから表示）。
-  // ────────────────────────────────────────────────────────────
+  // 問い合わせ者への AI 自動返信
   if (site.autoReply && email) {
-    // 非同期で実行（レスポンスをブロックしない）
-    void (async () => {
-      try {
-        const replyText = await generateAutoReply({
-          firmName: site.firmName,
-          services: site.services,
-          lead: { name: name ?? null, email, phone: phone ?? null, message: message ?? null },
-        })
-
-        const sent = await sendAutoReplyEmail({
-          to: email,
-          firmName: site.firmName,
-          replyText,
-        })
-
-        if (sent) {
-          await prisma.aiSiteLead.update({
-            where: { id: lead.id },
-            data: {
-              autoReplySent: true,
-              autoReplyAt:   new Date(),
-              autoReplyText: replyText,
-            },
+    emailTasks.push(
+      (async () => {
+        try {
+          const replyText = await generateAutoReply({
+            firmName: site.firmName,
+            services: site.services,
+            lead: { name: name ?? null, email, phone: phone ?? null, message: message ?? null },
           })
+
+          const sent = await sendAutoReplyEmail({
+            to: email,
+            firmName: site.firmName,
+            replyText,
+          })
+
+          if (sent) {
+            await prisma.aiSiteLead.update({
+              where: { id: lead.id },
+              data: {
+                autoReplySent: true,
+                autoReplyAt:   new Date(),
+                autoReplyText: replyText,
+              },
+            })
+          }
+        } catch (err) {
+          console.error('[AutoReply] エラー:', err)
         }
-      } catch (err) {
-        console.error('[autoreply] エラー:', err)
-      }
-    })()
+      })()
+    )
   }
+
+  await Promise.all(emailTasks)
 
   return NextResponse.json({ success: true, leadId: lead.id }, { status: 201 })
 }
