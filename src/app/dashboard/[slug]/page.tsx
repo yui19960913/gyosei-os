@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { PublishButton } from '@/components/dashboard/PublishButton'
+import { UnpublishButton } from '@/components/dashboard/UnpublishButton'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -47,9 +48,13 @@ export default async function DashboardPage({ params }: Props) {
           <h1 className="text-2xl font-bold text-gray-900">ダッシュボード</h1>
           <p className="text-sm text-gray-500 mt-1">{site.firmName}</p>
         </div>
-        {site.status !== 'published' && (
-          <PublishButton slug={slug} />
-        )}
+        <div className="flex items-center gap-3">
+          {site.status === 'published' ? (
+            <UnpublishButton slug={slug} />
+          ) : (
+            <PublishButton slug={slug} />
+          )}
+        </div>
       </div>
 
       {/* KPI カード */}
