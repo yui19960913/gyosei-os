@@ -111,6 +111,8 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
   const [publishing, setPublishing] = useState(false)
   const [savedAt, setSavedAt] = useState<number | null>(null)
   const [showProModal, setShowProModal] = useState(false)
+  const [showToast, setShowToast] = useState(true)
+  const [resetting, setResetting] = useState(false)
 
   const handleUpdate = useCallback(async (c: SiteContent) => {
     setContent(c)
@@ -128,6 +130,20 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
       setSaving(false)
     }
   }, [slug])
+
+  const handleReset = useCallback(async () => {
+    if (!confirm('編集内容を破棄して、AIが生成した最初の状態に戻しますか？')) return
+    setResetting(true)
+    setContent(initialContent)
+    try {
+      await fetch(`/api/editor/${slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteContent: initialContent }),
+      })
+    } catch { /* ignore */ }
+    finally { setResetting(false) }
+  }, [slug, initialContent])
 
   const handlePublish = useCallback(async () => {
     setPublishing(true)
@@ -182,6 +198,20 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
 
         {/* 右 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* リセットボタン */}
+          <button
+            onClick={handleReset}
+            disabled={resetting}
+            style={{
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: 'rgba(255,255,255,0.5)', fontSize: 12,
+              padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+            }}
+          >
+            {resetting ? '戻しています…' : '↺ リセット'}
+          </button>
+
           {/* Pro ボタン */}
           <button
             onClick={() => setShowProModal(true)}
@@ -233,6 +263,37 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
 
       {/* ── Proモーダル ── */}
       {showProModal && <ProModal onClose={() => setShowProModal(false)} />}
+
+      {/* ── 生成完了トースト ── */}
+      {showToast && (
+        <div style={{
+          position: 'fixed', bottom: 32, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 200, background: '#1e1b4b', color: '#fff',
+          borderRadius: 16, padding: '20px 28px',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.3)',
+          display: 'flex', alignItems: 'center', gap: 20,
+          maxWidth: 480, width: 'calc(100% - 48px)',
+        }}>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
+              ✨ サイトを生成しました！
+            </p>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+              テキストを直接クリックして修正できます。準備ができたら「サイトを公開する」を押してください。
+            </p>
+          </div>
+          <button
+            onClick={() => setShowToast(false)}
+            style={{
+              background: '#6366f1', color: '#fff', fontWeight: 700,
+              fontSize: 13, padding: '8px 16px', borderRadius: 8,
+              border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+            }}
+          >
+            編集を始める
+          </button>
+        </div>
+      )}
     </>
   )
 }

@@ -35,7 +35,7 @@ function ET({ as: tag = 'span', value, onChange, className = '', style, multi = 
       ref={ref}
       contentEditable
       suppressContentEditableWarning
-      className={`${className} cursor-text focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 rounded-sm`}
+      className={`${className} focus:outline-none rounded-sm et-editable`}
       style={mergedStyle}
       onBlur={(e: React.FocusEvent<HTMLElement>) => onChange(e.currentTarget.textContent ?? '')}
       onKeyDown={(e: React.KeyboardEvent<HTMLElement>) => {
