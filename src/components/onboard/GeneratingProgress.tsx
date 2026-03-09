@@ -23,6 +23,13 @@ interface Props {
 export function GeneratingProgress({ isApiDone, error, onComplete, onRetry }: Props) {
   const [currentStep, setCurrentStep] = useState(0)
   const [animationDone, setAnimationDone] = useState(false)
+  const [elapsed, setElapsed] = useState(0)
+
+  // 経過時間カウンター
+  useEffect(() => {
+    const t = setInterval(() => setElapsed((s) => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [])
 
   // アニメーション：各ステップを1.5秒ずつ進める
   useEffect(() => {
@@ -71,9 +78,12 @@ export function GeneratingProgress({ isApiDone, error, onComplete, onRetry }: Pr
         <h2 className="text-xl font-bold text-gray-900 mt-6 mb-2">
           {showFinalizing ? '最終調整中...' : 'AIがサイトを作成しています'}
         </h2>
-        <p className="text-sm text-gray-400 mb-8">
-          {showFinalizing ? 'もう少しお待ちください' : '30秒ほどお待ちください'}
+        <p className="text-sm text-gray-400 mb-2">
+          {showFinalizing ? 'もう少しお待ちください' : '通常15〜30秒で完成します'}
         </p>
+        <div className="text-xs text-gray-300 mb-8">
+          経過時間: {elapsed}秒
+        </div>
 
         {/* ステップ一覧 */}
         <div className="space-y-3 text-left">
