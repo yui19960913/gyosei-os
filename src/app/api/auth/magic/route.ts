@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       ? 'https://app.coreai-x.com'
       : 'http://localhost:3000'
 
-    const loginUrl = `${appUrl}/login/verify?token=${token}`
+    const loginUrl = `${appUrl}/api/auth/verify?token=${token}`
 
     await resend.emails.send({
       from: process.env.RESEND_FROM ?? 'noreply@coreai-x.com',
