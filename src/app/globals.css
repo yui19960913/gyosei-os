@@ -135,3 +135,67 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── Admin レスポンシブ ── */
+.admin-layout { display: flex; min-height: 100vh; background: #f9fafb; }
+.admin-sidebar { width: 224px; flex-shrink: 0; background: #fff; border-right: 1px solid #e5e7eb; }
+.admin-main   { flex: 1; padding: 32px; }
+
+@media (max-width: 767px) {
+  .admin-layout { flex-direction: column; }
+  .admin-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .admin-sidebar nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 8px;
+    gap: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-sidebar nav a {
+    white-space: nowrap;
+    padding: 10px 14px;
+    flex-shrink: 0;
+  }
+  .admin-main { padding: 16px; }
+}
+
+/* ── PreviewClient ツールバー モバイル対応 ── */
+.preview-btn-secondary { display: flex; }
+.preview-viewport-toggle { display: flex; }
+
+@media (max-width: 640px) {
+  .preview-btn-secondary  { display: none !important; }
+  .preview-viewport-toggle { display: none !important; }
+}
+
+/* ── UsageGuide グリッド ── */
+.usage-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+@media (max-width: 640px) {
+  .usage-guide-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+}
+
+/* ── モーダル モバイル ── */
+.modal-card {
+  border-radius: 24px;
+  padding: 40px 32px;
+}
+@media (max-width: 640px) {
+  .modal-card {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+}

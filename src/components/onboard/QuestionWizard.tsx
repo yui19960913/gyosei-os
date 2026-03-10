@@ -501,7 +501,7 @@ export function QuestionWizard() {
         </div>
 
         {/* カード */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8">
           {/* AIアバター + 質問 */}
           <div className="flex items-start gap-4 mb-8">
             <AiAvatar size={56} />

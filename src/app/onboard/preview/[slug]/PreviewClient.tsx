@@ -117,7 +117,7 @@ function PlanModal({
     >
       <div
         style={{
-          background: '#f9fafb', borderRadius: 24, padding: '48px 40px', maxWidth: 960, width: '100%',
+          background: '#f9fafb', borderRadius: 24, padding: 'clamp(24px, 4vw, 48px) clamp(16px, 4vw, 40px)', maxWidth: 960, width: '100%',
           boxShadow: '0 24px 80px rgba(0,0,0,0.25)',
           position: 'relative',
         }}
@@ -125,13 +125,13 @@ function PlanModal({
       >
         {/* 閉じるボタン */}
         <button onClick={onClose} style={{
-          position: 'absolute', top: 20, right: 20,
+          position: 'absolute', top: 16, right: 16,
           background: '#e5e7eb', border: 'none', borderRadius: 100,
           width: 32, height: 32, cursor: 'pointer',
           fontSize: 16, color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>×</button>
 
-        <h2 style={{ fontSize: 24, fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.6px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.6px', textAlign: 'center' }}>
           公開プランを選んでください
         </h2>
         <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 36, textAlign: 'center' }}>
@@ -294,7 +294,7 @@ function ReviewerModal({
     >
       <div
         style={{
-          background: '#f9fafb', borderRadius: 24, padding: '48px 40px', maxWidth: 960, width: '100%',
+          background: '#f9fafb', borderRadius: 24, padding: 'clamp(24px, 4vw, 48px) clamp(16px, 4vw, 40px)', maxWidth: 960, width: '100%',
           boxShadow: '0 24px 80px rgba(0,0,0,0.25)',
           position: 'relative',
         }}
@@ -302,13 +302,13 @@ function ReviewerModal({
       >
         {/* 閉じるボタン */}
         <button onClick={onClose} style={{
-          position: 'absolute', top: 20, right: 20,
+          position: 'absolute', top: 16, right: 16,
           background: '#e5e7eb', border: 'none', borderRadius: 100,
           width: 32, height: 32, cursor: 'pointer',
           fontSize: 16, color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>×</button>
 
-        <h2 style={{ fontSize: 24, fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.6px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.6px', textAlign: 'center' }}>
           レビュアーを選んでください
         </h2>
         <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 36, textAlign: 'center' }}>
@@ -497,8 +497,8 @@ function UsageGuide({ onClose }: { onClose: () => void }) {
     }}>
       <div style={{
         background: '#fff', borderRadius: 24,
-        width: '75vw', maxWidth: 680, maxHeight: '80vh',
-        padding: '48px 56px', textAlign: 'center',
+        width: '90vw', maxWidth: 680, maxHeight: '85vh',
+        padding: 'clamp(24px, 5vw, 56px)', textAlign: 'center',
         boxShadow: '0 32px 100px rgba(0,0,0,0.4)',
         animation: 'slideUp 0.35s ease',
         overflow: 'auto',
@@ -512,7 +512,7 @@ function UsageGuide({ onClose }: { onClose: () => void }) {
           以下の機能をご活用ください。
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginBottom: 48 }}>
+        <div className="usage-guide-grid">
           {[
             { icon: '✏️', title: 'テキスト編集', desc: '各テキストをクリックするとそのまま編集できます' },
             { icon: '🗑️', title: '項目の削除', desc: '各カードの右上の ✕ ボタンで項目を削除できます' },
@@ -656,6 +656,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
           <button
             onClick={handleReset}
             disabled={resetting}
+            className="preview-btn-secondary"
             style={{
               background: 'rgba(255,255,255,0.07)',
               border: '1px solid rgba(255,255,255,0.15)',
@@ -667,7 +668,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
           </button>
 
           {/* ビューポート切替 */}
-          <div style={{ display: 'flex', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, overflow: 'hidden' }}>
+          <div className="preview-viewport-toggle" style={{ border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, overflow: 'hidden' }}>
             <button
               onClick={() => setViewport('pc')}
               style={{
@@ -693,6 +694,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
           {/* Pro ボタン */}
           <button
             onClick={() => setShowProModal(true)}
+            className="preview-btn-secondary"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15))',

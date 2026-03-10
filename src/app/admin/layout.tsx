@@ -9,13 +9,13 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="w-56 shrink-0 bg-white border-r border-gray-200">
-        <div className="px-6 py-5 border-b border-gray-200">
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <div className="px-6 py-4 border-b border-gray-200">
           <p className="text-xs text-gray-400">運営管理</p>
           <p className="text-sm font-bold text-gray-900 mt-0.5">AI集客OS</p>
         </div>
-        <nav className="py-3">
+        <nav className="py-2">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
         </nav>
       </aside>
-      <main className="flex-1 p-8">{children}</main>
+      <main className="admin-main">{children}</main>
     </div>
   )
 }

@@ -343,7 +343,7 @@ export function SiteTemplate({
     color: '#6366f1', marginBottom: 12, display: 'block',
   }
   const sectionTitle: React.CSSProperties = {
-    fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, color: '#111827',
+    fontSize: 'clamp(24px, 5vw, 40px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, color: '#111827',
   }
   const container: React.CSSProperties = { maxWidth: 1100, margin: '0 auto' }
 
@@ -359,7 +359,7 @@ export function SiteTemplate({
         borderBottom: '1px solid #f3f4f6',
       }}>
         <div className="st-container" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
             <div style={{
               width: 34, height: 34, borderRadius: 8,
               background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
@@ -367,9 +367,9 @@ export function SiteTemplate({
             }}>
               <span style={{ color: '#fff', fontSize: 13, fontWeight: 800 }}>法</span>
             </div>
-            <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.3px', color: '#111827' }}>{firmName}</span>
+            <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.3px', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{firmName}</span>
           </div>
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
             {[
               ['#about', '当事務所について'],
               ['#services', 'サービス'],
@@ -383,9 +383,9 @@ export function SiteTemplate({
               >{label}</a>
             ))}
             <a href="#contact" style={{
-              fontSize: 13, fontWeight: 700, padding: '8px 20px', borderRadius: 100,
+              fontSize: 13, fontWeight: 700, padding: '8px 18px', borderRadius: 100,
               background: '#6366f1', color: '#fff', textDecoration: 'none',
-              boxShadow: '0 2px 10px rgba(99,102,241,0.25)',
+              boxShadow: '0 2px 10px rgba(99,102,241,0.25)', whiteSpace: 'nowrap',
             }}>
               無料相談
             </a>
@@ -434,7 +434,7 @@ export function SiteTemplate({
             style={{ fontSize: 17, color: '#4b5563', lineHeight: 1.8, maxWidth: 520, marginBottom: 44, fontWeight: 400 } as React.CSSProperties}
           />
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }} className="st-hero-btns">
             <a href="#contact" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               background: '#6366f1', color: '#fff', fontWeight: 700,
@@ -723,7 +723,7 @@ export function SiteTemplate({
       }}>
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <ET as="h2" value={cta.headline} onChange={v => upCta('headline', v)}
-            style={{ fontSize: 44, fontWeight: 800, letterSpacing: '-2px', marginBottom: 16, lineHeight: 1.1, display: 'block', color: '#1e1b4b' } as React.CSSProperties}
+            style={{ fontSize: 'clamp(28px, 5.5vw, 44px)', fontWeight: 800, letterSpacing: '-1.5px', marginBottom: 16, lineHeight: 1.1, display: 'block', color: '#1e1b4b' } as React.CSSProperties}
           />
           <ET as="p" value={cta.subheadline} onChange={v => upCta('subheadline', v)} multi
             style={{ fontSize: 16, color: '#6b7280', lineHeight: 1.75, marginBottom: 44, display: 'block' } as React.CSSProperties}
