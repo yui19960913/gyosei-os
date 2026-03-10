@@ -1,8 +1,10 @@
 import Link from 'next/link'
 
 const navItems = [
-  { href: '/admin',       label: 'ダッシュボード' },
-  { href: '/admin/users', label: 'ユーザー管理' },
+  { href: '/admin',             label: 'ダッシュボード' },
+  { href: '/admin/users',       label: 'ユーザー管理' },
+  { href: '/admin/reviews',     label: 'レビュー管理' },
+  { href: '/admin/reviewers',   label: 'レビュアー' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

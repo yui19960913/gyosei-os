@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest) {
   try {
-    const { slug, name, email } = await req.json() as { slug: string; name: string; email: string }
+    const { slug, name, email, plan, reviewer } = await req.json() as { slug: string; name: string; email: string; plan?: string; reviewer?: string }
 
     if (!slug || !name || !email) {
       return NextResponse.json({ error: '入力内容を確認してください' }, { status: 400 })
@@ -32,6 +32,44 @@ export async function POST(req: NextRequest) {
     const appUrl = process.env.NODE_ENV === 'production'
       ? 'https://app.coreai-x.com'
       : 'http://localhost:3000'
+
+    // レビュー依頼の作成
+    if (plan && plan !== 'free' && site) {
+      const amountJpy = plan === 'double_review' ? 100000 : 50000
+      await prisma.reviewRequest.create({
+        data: {
+          siteId: site.id,
+          plan,
+          reviewerType: reviewer ?? 'single',
+          status: 'pending',
+          amountJpy,
+          clientName: name,
+          clientEmail: email,
+        },
+      })
+
+      // 管理者へ通知メール
+      await resend.emails.send({
+        from: process.env.RESEND_FROM ?? 'noreply@coreai-x.com',
+        to: process.env.ADMIN_EMAIL ?? 'admin@coreai-x.com',
+        subject: '【AI集客OS】新規レビュー依頼が届きました',
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+            <h2 style="font-size: 20px; color: #111;">新規レビュー依頼</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 8px 0; color: #555;">依頼者</td><td style="color: #111; font-weight: 600;">${name}</td></tr>
+              <tr><td style="padding: 8px 0; color: #555;">メール</td><td style="color: #111;">${email}</td></tr>
+              <tr><td style="padding: 8px 0; color: #555;">事務所</td><td style="color: #111;">${site.firmName}</td></tr>
+              <tr><td style="padding: 8px 0; color: #555;">プラン</td><td style="color: #111;">${plan === 'double_review' ? '二人に依頼 ¥100,000' : '一人に依頼 ¥50,000'}</td></tr>
+              <tr><td style="padding: 8px 0; color: #555;">レビュアー</td><td style="color: #111;">${reviewer ?? '未選択'}</td></tr>
+            </table>
+            <a href="${appUrl}/admin/reviews" style="display: inline-block; margin: 24px 0; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px;">
+              管理画面で確認する
+            </a>
+          </div>
+        `,
+      })
+    }
 
     await resend.emails.send({
       from: process.env.RESEND_FROM ?? 'noreply@coreai-x.com',

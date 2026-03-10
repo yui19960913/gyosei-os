@@ -118,8 +118,9 @@ model AiSite {
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
   updatedAt     DateTime @updatedAt @db.Timestamptz(6)
 
-  leads    AiSiteLead[]
-  seoPages AiSeoPage[]
+  leads          AiSiteLead[]
+  seoPages       AiSeoPage[]
+  reviewRequests ReviewRequest[]
 
   @@index([status])
   @@index([promptHash])
@@ -176,6 +177,64 @@ model AiSeoPage {
   @@unique([siteId, slug])
   @@index([siteId])
   @@map("ai_seo_pages")
+}
+
+// ============================================================
+// AI集客OS: reviewers（レビュアー管理）
+// ============================================================
+model Reviewer {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(100)
+  title       String   @db.VarChar(200)
+  company     String   @db.VarChar(200)
+  experience  String   @db.VarChar(100)
+  speciality  String   @db.VarChar(300)
+  bio         String?
+  photoUrl    String?  @db.VarChar(500)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  reviewRequests ReviewRequest[]
+
+  @@map("reviewers")
+}
+
+// ============================================================
+// AI集客OS: review_requests（レビュー依頼）
+// ============================================================
+model ReviewRequest {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  siteId       String    @db.Uuid
+  // 'review' = 一人, 'double_review' = 二人
+  plan         String    @db.VarChar(20)
+  // selected reviewer IDs (JSON array of reviewer ids, or 'double' for both)
+  reviewerType String    @db.VarChar(20)
+  // 担当レビュアー（承認時に設定）
+  reviewerId   String?   @db.Uuid
+  // pending | in_review | approved | rejected
+  status       String    @default("pending") @db.VarChar(20)
+  // 承認者情報（承認時に設定）
+  approvedByName  String?   @db.VarChar(100)
+  approvedByTitle String?   @db.VarChar(200)
+  approvedAt   DateTime? @db.Timestamptz(6)
+  // レビュアーからのコメント
+  note         String?
+  // 支払い金額（円）
+  amountJpy    Int?
+  // 依頼者情報
+  clientName   String?   @db.VarChar(100)
+  clientEmail  String?   @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(6)
+
+  site     AiSite    @relation(fields: [siteId], references: [id])
+  reviewer Reviewer? @relation(fields: [reviewerId], references: [id])
+
+  @@index([siteId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("review_requests")
 }
 
 // ============================================================
