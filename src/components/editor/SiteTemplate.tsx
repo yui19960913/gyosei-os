@@ -69,7 +69,7 @@ function ProfilePhotoUpload({ src, editable, onChange }: {
 
   return (
     <div
-      className={`relative overflow-hidden shrink-0 ${editable ? 'group cursor-pointer' : ''}`}
+      className={`relative overflow-hidden shrink-0 st-about-photo ${editable ? 'group cursor-pointer' : ''}`}
       style={{ width: 180, height: 220, borderRadius: 16 }}
       onClick={() => editable && fileRef.current?.click()}
     >
@@ -520,7 +520,7 @@ export function SiteTemplate({
               <ET as="p" value={profile.body} onChange={v => upProfile('body', v)} multi
                 style={{ fontSize: 15, color: '#374151', lineHeight: 1.95, display: 'block', marginBottom: 24 } as React.CSSProperties}
               />
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <div className="st-about-tags" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {profile.strengths.map((s, i) => (
                   <span key={i} style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,

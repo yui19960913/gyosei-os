@@ -103,7 +103,9 @@ body {
 .phone-frame .st-strengths-grid { grid-template-columns: 1fr; }
 .phone-frame .st-strengths-grid > div { border-right: none !important; border-bottom: 1px solid #f3f4f6; }
 .phone-frame .st-strengths-grid > div:last-child { border-bottom: none; }
-.phone-frame .st-about-grid  { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
+.phone-frame .st-about-grid  { grid-template-columns: 1fr; gap: 24px; padding: 24px; text-align: center; }
+.phone-frame .st-about-grid .st-about-photo { margin: 0 auto; }
+.phone-frame .st-about-grid .st-about-tags  { justify-content: center; }
 .phone-frame .st-services-grid { grid-template-columns: 1fr; }
 .phone-frame .st-pricing-grid  { grid-template-columns: 1fr; }
 .phone-frame .st-testimonials-grid { grid-template-columns: 1fr; }
