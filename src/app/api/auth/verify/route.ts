@@ -30,8 +30,7 @@ export async function GET(req: NextRequest) {
     : 'http://localhost:3000'
 
   // そのユーザーのサイトを取得してダッシュボードに直接リダイレクト
-  const site = await prisma.magicToken.findUnique({ where: { token } })
-    .then(() => prisma.aiSite.findFirst({ where: { ownerEmail: magic.email }, orderBy: { createdAt: 'desc' } }))
+  const site = await prisma.aiSite.findFirst({ where: { ownerEmail: magic.email }, orderBy: { createdAt: 'desc' } })
 
   const redirectPath = site ? `/dashboard/${site.slug}` : '/onboard'
   const res = NextResponse.redirect(new URL(redirectPath, appUrl))

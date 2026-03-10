@@ -35,7 +35,7 @@ function fromBase64Url(str: string): Uint8Array {
   return bytes
 }
 
-export async function createSessionToken(email: string, role: 'admin' | 'user' = 'admin'): Promise<string> {
+export async function createSessionToken(email: string, role: 'admin' | 'user'): Promise<string> {
   const payload = JSON.stringify({ email, role, exp: Date.now() + MAX_AGE * 1000 })
   const encoded = toBase64Url(new TextEncoder().encode(payload))
   const key = await getKey('sign')
@@ -59,7 +59,7 @@ export async function verifySessionToken(token: string): Promise<{ email: string
       new TextDecoder().decode(fromBase64Url(encoded)),
     ) as { email: string; role?: 'admin' | 'user'; exp: number }
     if (Date.now() > payload.exp) return null
-    return { email: payload.email, role: payload.role ?? 'admin' }
+    return { email: payload.email, role: payload.role ?? 'user' }
   } catch {
     return null
   }

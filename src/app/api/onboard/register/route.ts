@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     // レビュー依頼の作成
     if (plan && plan !== 'free' && site) {
-      const amountJpy = plan === 'double_review' ? 100000 : 50000
+      const amountJpy = 100000 // プロ確認プラン固定価格
       await prisma.reviewRequest.create({
         data: {
           siteId: site.id,
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding: 8px 0; color: #555;">依頼者</td><td style="color: #111; font-weight: 600;">${name}</td></tr>
               <tr><td style="padding: 8px 0; color: #555;">メール</td><td style="color: #111;">${email}</td></tr>
               <tr><td style="padding: 8px 0; color: #555;">事務所</td><td style="color: #111;">${site.firmName}</td></tr>
-              <tr><td style="padding: 8px 0; color: #555;">プラン</td><td style="color: #111;">${plan === 'double_review' ? '二人に依頼 ¥100,000' : '一人に依頼 ¥50,000'}</td></tr>
+              <tr><td style="padding: 8px 0; color: #555;">プラン</td><td style="color: #111;">プロ確認 ¥100,000</td></tr>
               <tr><td style="padding: 8px 0; color: #555;">レビュアー</td><td style="color: #111;">${reviewer ?? '未選択'}</td></tr>
             </table>
             <a href="${appUrl}/admin/reviews" style="display: inline-block; margin: 24px 0; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px;">
