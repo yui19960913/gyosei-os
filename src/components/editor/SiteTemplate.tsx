@@ -823,6 +823,12 @@ export function SiteTemplate({
           ))}
         </div>
         <p style={{ fontSize: 11, color: '#d1d5db' }}>© {new Date().getFullYear()} {firmName}. All rights reserved.</p>
+        <p style={{ fontSize: 11, color: '#e5e7eb', marginTop: 12 }}>
+          <a href="https://coreai-x.com" target="_blank" rel="noopener noreferrer"
+            style={{ color: '#d1d5db', textDecoration: 'none' }}>
+            Powered by AI集客OS
+          </a>
+        </p>
       </footer>
     </div>
   )
