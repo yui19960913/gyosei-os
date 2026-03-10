@@ -296,7 +296,7 @@ function RegisterModal({
       const appUrl = process.env.NODE_ENV === 'production'
         ? 'https://app.coreai-x.com'
         : 'http://localhost:3000'
-      window.location.href = `${appUrl}/sites`
+      window.location.href = `${appUrl}/dashboard`
     } else {
       const data = await res.json() as { error?: string }
       setError(data.error ?? 'エラーが発生しました')

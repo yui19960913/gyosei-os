@@ -49,9 +49,9 @@ export default async function proxy(request: NextRequest) {
       pathname.startsWith('/onboard') ||
       pathname.startsWith('/api/')
 
-    // 認証済みでloginページ → /sitesへ
+    // 認証済みでloginページ → /dashboardへ（verify APIがslugを解決する）
     if (session && pathname.startsWith('/login')) {
-      url.pathname = '/sites'
+      url.pathname = '/dashboard'
       return NextResponse.redirect(url)
     }
 
@@ -61,9 +61,9 @@ export default async function proxy(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
-    // ルート → /sites or /login
+    // ルート → /dashboard or /login
     if (pathname === '/') {
-      url.pathname = session ? '/sites' : '/login'
+      url.pathname = session ? '/dashboard' : '/login'
       return NextResponse.redirect(url)
     }
 
