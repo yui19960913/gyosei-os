@@ -277,7 +277,7 @@ function ReviewerModal({
       role: '両名によるW確認',
       org: 'より安心・確実なチェック',
       specialty: '',
-      price: '¥80,000',
+      price: '¥100,000',
       buttonLabel: '二人に依頼する',
     },
   ]
