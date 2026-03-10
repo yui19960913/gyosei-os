@@ -177,20 +177,20 @@ function PlanModal({
               background: '#f59e0b', color: '#fff',
               fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 100,
               letterSpacing: '0.5px',
-            }}>★ 人気</span>
+            }}>★ おすすめ</span>
 
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: '#6366f1', marginBottom: 4 }}>プラン 2</p>
               <h3 style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 4 }}>プロに確認してもらう</h3>
-              <p style={{ fontSize: 26, fontWeight: 800, color: '#111827' }}>¥50,000</p>
+              <p style={{ fontSize: 26, fontWeight: 800, color: '#111827' }}>¥100,000</p>
             </div>
-            <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.6 }}>現役エンジニアが技術・表示・フォーム動作を確認します</p>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
-                'フォーム送信の動作確認',
-                'スマホ・PC表示の確認',
-                '問い合わせ通知メールの確認',
-                'ページ表示速度の確認',
+                '現役エンジニアによる技術確認',
+                'フォーム・メール動作確認',
+                'スマホ・PC表示確認',
+                '独自ドメイン設定（1年分含む）',
+                '1年間サポート保証',
               ].map(item => (
                 <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
                   <span style={{ color: '#6366f1', fontWeight: 700 }}>✓</span> {item}
@@ -204,7 +204,7 @@ function PlanModal({
                 background: '#6366f1', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer',
               }}
             >
-              レビュアーを選ぶ →
+              依頼する →
             </button>
           </div>
 
