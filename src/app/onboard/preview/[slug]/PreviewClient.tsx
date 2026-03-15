@@ -658,12 +658,14 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
               border: '1px solid rgba(255,255,255,0.15)',
               color: 'rgba(255,255,255,0.7)', fontSize: 12,
               padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+              display: isMobile ? 'none' : undefined,
             }}
           >
             🎨 デザイン
           </button>
 
           {/* AIチャットボタン */}
+          {!isMobile && (
           <button
             onClick={() => setShowChat(v => !v)}
             style={{
@@ -675,6 +677,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
           >
             💬 AIチャット
           </button>
+          )}
 
           {/* リセットボタン */}
           <button
@@ -691,8 +694,8 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
             {resetting ? '戻しています…' : '↺ リセット'}
           </button>
 
-          {/* ビューポート切替 */}
-          <div className="preview-viewport-toggle" style={{ border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, overflow: 'hidden' }}>
+          {/* ビューポート切替（PCのみ） */}
+          {!isMobile && <div className="preview-viewport-toggle" style={{ border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, overflow: 'hidden' }}>
             <button
               onClick={() => setViewport('pc')}
               style={{
@@ -713,7 +716,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent }: Pr
             >
               📱 スマホ
             </button>
-          </div>
+          </div>}
 
 
           {/* 公開ボタン */}
