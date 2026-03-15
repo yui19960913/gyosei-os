@@ -9,8 +9,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'ファイルがありません' }, { status: 400 })
   }
 
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-  if (!allowedTypes.includes(file.type)) {
+  if (file.type && !file.type.startsWith('image/')) {
     return NextResponse.json({ error: '画像ファイルのみアップロード可能です' }, { status: 400 })
   }
 
