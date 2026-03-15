@@ -64,7 +64,7 @@ export default function OnboardPage() {
           </div>
 
           <button
-            onClick={() => router.push('/onboard/create')}
+            onClick={() => router.push('/onboard/questions')}
             style={{
               width: '100%', background: '#6366f1', color: '#fff', fontWeight: 700,
               fontSize: 16, padding: '16px', borderRadius: 100,
