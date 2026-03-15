@@ -83,7 +83,6 @@ function PlanModal({
                 'テキスト・写真をいつでも編集',
                 '問い合わせフォーム付き',
                 '問い合わせをメールで即時通知',
-                'AIによる自動返信メール',
                 'SSL・サーバー代込み',
               ].map(item => (
                 <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
