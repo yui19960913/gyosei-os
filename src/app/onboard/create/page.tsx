@@ -77,8 +77,13 @@ export default function OnboardCreatePage() {
           </p>
         </div>
 
-        {/* 特徴カード 3列 */}
-        <div style={{
+        {/* 特徴カード 3列（スマホは1列） */}
+        <style>{`
+          @media (max-width: 640px) {
+            .feature-grid { grid-template-columns: 1fr !important; }
+          }
+        `}</style>
+        <div className="feature-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr',
           gap: 16,
