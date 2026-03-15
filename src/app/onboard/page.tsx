@@ -39,7 +39,7 @@ export default function OnboardPage() {
           </h2>
 
           <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.8, marginBottom: 36 }}>
-            サイトを公開するには、<strong style={{ color: '#374151' }}>ドメイン（サイトのアドレス）</strong>・<strong style={{ color: '#374151' }}>サーバー（データの置き場所）</strong>・<strong style={{ color: '#374151' }}>表示させるページ</strong>の3つが必要です。制作業者に依頼するか、個人で制作する場合はそれぞれ別々に契約・設定する必要がありますが、このサービスなら<strong style={{ color: '#374151' }}>未経験の方でも3つまとめて一括で完結</strong>できます。
+            インターネット上でサイトを公開するためには、<strong style={{ color: '#374151' }}>ドメイン（サイトのアドレス）</strong>・<strong style={{ color: '#374151' }}>サーバー（データの管理場所）</strong>・<strong style={{ color: '#374151' }}>表示させるページ</strong>の3つをご用意いただく必要があります。制作会社へのご依頼、もしくはご自身での個別契約・設定が必要となりますが、本サービスをご利用いただくことで、<strong style={{ color: '#374151' }}>未経験の方でも一括で設定・公開まで完結</strong>することが可能です。
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36 }}>
