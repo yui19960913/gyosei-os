@@ -39,7 +39,7 @@ export default function OnboardPage() {
           </h2>
 
           <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.8, marginBottom: 36 }}>
-            インターネット上にサイトを公開するには、<strong style={{ color: '#374151' }}>ドメイン（サイトのアドレス）</strong>・<strong style={{ color: '#374151' }}>サーバー（データの置き場所）</strong>・<strong style={{ color: '#374151' }}>サイト本体</strong>の3つが必要です。<br /><br />
+            インターネット上にサイトを公開するには、<strong style={{ color: '#374151' }}>ドメイン（サイトのアドレス）</strong>・<strong style={{ color: '#374151' }}>サーバー（データの置き場所）</strong>・<strong style={{ color: '#374151' }}>表示されるページ</strong>の3つが必要です。<br /><br />
             通常は業者に依頼するか、それぞれ別々に契約・設定する必要がありますが、このサービスを使えば<strong style={{ color: '#374151' }}>未経験の方でも一括で設定・公開まで完結</strong>できます。
           </p>
 
@@ -47,7 +47,7 @@ export default function OnboardPage() {
             {[
               { icon: '🌐', label: 'ドメイン', desc: 'サイトのアドレス（例: tanaka-office.com）' },
               { icon: '🖥️', label: 'サーバー', desc: 'サイトのデータを24時間公開し続ける場所' },
-              { icon: '✨', label: 'サイト本体', desc: 'AIが5分でプロ品質のデザインを自動生成' },
+              { icon: '✨', label: '表示されるページ', desc: 'AIが5分でプロ品質のデザインを自動生成' },
             ].map(item => (
               <div key={item.label} style={{
                 display: 'flex', alignItems: 'center', gap: 16,
