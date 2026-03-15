@@ -77,32 +77,32 @@ export default function OnboardCreatePage() {
           </p>
         </div>
 
-        {/* 特徴カード 3列（スマホは1列） */}
-        <style>{`
-          @media (max-width: 640px) {
-            .feature-grid { grid-template-columns: 1fr !important; }
-          }
-        `}</style>
-        <div className="feature-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: 16,
+        {/* 特徴カード 縦並び */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
         }}>
           {FEATURES.map((f) => (
             <div key={f.reason} style={{
               background: '#fff',
-              borderRadius: 16,
-              padding: '20px 22px',
+              borderRadius: 14,
+              padding: '16px 20px',
               border: '1px solid #e5e7eb',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
             }}>
-              <span style={{ fontSize: 28, lineHeight: 1, display: 'block', marginBottom: 12 }}>{f.icon}</span>
-              <p style={{ fontSize: 13, color: '#9ca3af', marginBottom: 8, lineHeight: 1.5 }}>
-                {f.reason}
-              </p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '-0.3px', lineHeight: 1.6 }}>
-                {f.result}
-              </p>
+              <span style={{ fontSize: 28, flexShrink: 0 }}>{f.icon}</span>
+              <div>
+                <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4, lineHeight: 1.5 }}>
+                  {f.reason}
+                </p>
+                <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', letterSpacing: '-0.3px', lineHeight: 1.5 }}>
+                  {f.result}
+                </p>
+              </div>
             </div>
           ))}
         </div>
