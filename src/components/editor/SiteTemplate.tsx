@@ -150,8 +150,8 @@ function CropModal({ imageSrc, onConfirm, onCancel }: {
 
 // ─── ProfilePhoto アップロード ────────────────────────────────────────────────
 
-function ProfilePhotoUpload({ src, editable, onChange }: {
-  src?: string; editable: boolean; onChange: (url: string) => void
+function ProfilePhotoUpload({ src, editable, onChange, siteSlug }: {
+  src?: string; editable: boolean; onChange: (url: string) => void; siteSlug?: string
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading]     = useState(false)
@@ -162,7 +162,8 @@ function ProfilePhotoUpload({ src, editable, onChange }: {
     try {
       const form = new FormData()
       form.append('file', blob, 'photo.jpg')
-      const res = await fetch('/api/marketing-os/upload', { method: 'POST', body: form })
+      const params = siteSlug ? `?slug=${encodeURIComponent(siteSlug)}` : ''
+      const res = await fetch(`/api/marketing-os/upload${params}`, { method: 'POST', body: form })
       if (!res.ok) throw new Error()
       const { url } = await res.json()
       onChange(url)
@@ -646,6 +647,7 @@ export function SiteTemplate({
               src={profile.profilePhotoUrl}
               editable={editable}
               onChange={url => cb?.({ ...content, profile: { ...profile, profilePhotoUrl: url } })}
+              siteSlug={siteSlug}
             />
             <div>
               <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, letterSpacing: '-0.5px', color: '#111827' }}>{firmName}</h3>
