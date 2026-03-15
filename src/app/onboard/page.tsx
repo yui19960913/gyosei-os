@@ -35,7 +35,7 @@ export default function OnboardPage() {
             fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 800,
             color: '#1e1b4b', letterSpacing: '-1px', lineHeight: 1.3, marginBottom: 24,
           }}>
-            ウェブサイトを持つのに<br />必要なもの3つ
+            はじめに、<br />ウェブサイトを持つのに必要なもの3つ
           </h2>
 
           <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.8, marginBottom: 36 }}>
