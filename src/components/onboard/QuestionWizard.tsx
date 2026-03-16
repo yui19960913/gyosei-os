@@ -484,7 +484,11 @@ export function QuestionWizard() {
     if (!currentStep.required) return true
     const val = answers[currentStep.id as keyof GenerateInput]
     if (Array.isArray(val)) return val.length > 0
-    return typeof val === 'string' && val.trim().length > 0
+    if (typeof val !== 'string' || val.trim().length === 0) return false
+    if (currentStep.id === 'ownerEmail') {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
+    }
+    return true
   }
 
   // ---- ナビゲーション ----
@@ -595,7 +599,7 @@ export function QuestionWizard() {
             {currentStep.type === 'text' && (
               <>
                 <input
-                  type="text"
+                  type={currentStep.id === 'ownerEmail' ? 'email' : 'text'}
                   value={currentValue as string}
                   onChange={(e) => setValue(e.target.value)}
                   placeholder={currentStep.placeholder}
@@ -612,6 +616,9 @@ export function QuestionWizard() {
                   }}
                   autoFocus
                 />
+                {currentStep.id === 'ownerEmail' && (currentValue as string).length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((currentValue as string).trim()) && (
+                  <p className="text-xs text-red-500">メールアドレスの形式で入力してください（例：info@example.com）</p>
+                )}
                 <p className="text-xs text-gray-400 text-right">
                   Enter 2回 または「次へ」で進む
                 </p>
