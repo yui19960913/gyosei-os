@@ -73,7 +73,7 @@ const STEPS: Step[] = [
   },
   {
     id: 'strengths',
-    question: '事務所の強みを教えてください（任意）',
+    question: 'できることを教えてください（任意）',
     subtext: '当てはまるものを選んでください。複数選択可。',
     type: 'strength-select',
     required: false,
@@ -181,8 +181,6 @@ function TestimonialsInput({
 const STRENGTH_OPTIONS = [
   '🌐 多言語対応（英語・中国語・ベトナム語など）',
   '⚡ スピード対応（即日相談・最短申請）',
-  '💻 オンライン完結（来所不要・全国対応）',
-  '📋 専門分野に特化（在留資格・建設業許可など）',
   '💰 明確な料金体系',
   '🤝 地域密着・顔の見えるサポート',
   '📅 土日祝対応',
@@ -335,6 +333,20 @@ function AreaSelectInput({ value, onChange }: { value: string[]; onChange: (v: s
           {isNationwide ? '全国を選択中' : `${selectedCount}エリアを選択中`}
         </p>
       )}
+
+      {/* オンライン対応可 */}
+      {(() => {
+        const isOnline = value.includes('オンライン対応可')
+        const toggleOnline = () => {
+          onChange(isOnline ? value.filter(v => v !== 'オンライン対応可') : [...value, 'オンライン対応可'])
+        }
+        return (
+          <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-colors ${isOnline ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
+            <input type="checkbox" checked={isOnline} onChange={toggleOnline} className="w-4 h-4 accent-blue-600" />
+            <span className="font-semibold text-sm text-gray-800">💻 オンライン対応可（来所不要・全国）</span>
+          </label>
+        )
+      })()}
 
       {/* 全国 */}
       <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-colors ${isNationwide ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
