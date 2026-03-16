@@ -115,7 +115,7 @@ export default function OnboardCreatePage() {
             無料でサイトを作る →
           </button>
           <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 12 }}>
-            初月無料・いつでも解約OK・約5分で完成
+            約5分で完成・いつでも解約OK
           </p>
         </div>
 

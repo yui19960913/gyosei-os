@@ -50,7 +50,7 @@ function PlanModal({
           サイトを公開しましょう
         </h2>
         <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 36, textAlign: 'center' }}>
-          今日申し込みで初月無料。
+          今日から公開できます。いつでも解約可能。
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20, marginBottom: 28 }}>
@@ -67,15 +67,15 @@ function PlanModal({
               background: '#6366f1', color: '#fff',
               fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 100,
               letterSpacing: '0.5px',
-            }}>🎉 初月無料</span>
+            }}>🌐 公開プラン</span>
 
             <div>
               <h3 style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 8 }}>サイト公開・運用プラン</h3>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 36, fontWeight: 800, color: '#111827', letterSpacing: '-1px' }}>¥2,980</span>
+                <span style={{ fontSize: 36, fontWeight: 800, color: '#111827', letterSpacing: '-1px' }}>¥4,980</span>
                 <span style={{ fontSize: 14, color: '#6b7280' }}>/月（税込）</span>
               </div>
-              <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>年間 ¥35,760（一括払い）</p>
+              <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>年間 ¥59,760（一括払い）</p>
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
@@ -426,7 +426,7 @@ function RegisterModal({
               ? '登録してプロに依頼する →'
               : plan === 'custom'
               ? '登録して相談する（無料） →'
-              : '申し込む（初月無料）→'}
+              : '申し込む →'}
           </button>
           <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center' }}>
             パスワード不要。次回からメールアドレスだけでログインできます。
