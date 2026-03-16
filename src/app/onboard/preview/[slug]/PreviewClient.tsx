@@ -11,16 +11,23 @@ import type { SiteContent } from '@/lib/ai-site/types'
 
 function PlanModal({
   onClose,
-  onSelectMonthly,
-  onSelectReview,
-  onSelectCustom,
+  onSelect,
 }: {
   onClose: () => void
-  onSelectMonthly: () => void
-  onSelectReview: () => void
-  onSelectCustom: () => void
+  onSelect: (plan: 'monthly' | 'annual', withReview: boolean) => void
 }) {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('annual')
+  const [withReview, setWithReview] = useState(false)
+
+  const features = [
+    'AIが生成したサイトをそのまま公開',
+    'テキスト・写真をいつでも編集',
+    '問い合わせフォーム付き',
+    '問い合わせをメールで即時通知',
+    'SSL・サーバー代込み',
+    'SNSリンク設定（LINE・Instagram等）',
+  ]
+
   return (
     <div
       style={{
@@ -33,7 +40,8 @@ function PlanModal({
     >
       <div
         style={{
-          background: '#f9fafb', borderRadius: 24, padding: 'clamp(24px, 4vw, 48px) clamp(16px, 4vw, 40px)', maxWidth: 1040, width: '100%',
+          background: '#f9fafb', borderRadius: 24, padding: 'clamp(24px, 4vw, 40px) clamp(16px, 4vw, 36px)',
+          maxWidth: 520, width: '100%',
           boxShadow: '0 24px 80px rgba(0,0,0,0.25)',
           position: 'relative',
         }}
@@ -46,148 +54,115 @@ function PlanModal({
           fontSize: 16, color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>×</button>
 
-        <h2 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.6px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 6, letterSpacing: '-0.5px', textAlign: 'center' }}>
           サイトを公開しましょう
         </h2>
-        <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 36, textAlign: 'center' }}>
+        <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24, textAlign: 'center' }}>
           今日から公開できます。いつでも解約可能。
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20, marginBottom: 28 }}>
-
-          {/* Plan 1: 月額プラン */}
-          <div style={{
-            background: '#fff', borderRadius: 20, padding: 28,
-            border: '2px solid #6366f1',
-            display: 'flex', flexDirection: 'column', gap: 12,
-            position: 'relative',
-          }}>
-            <span style={{
-              position: 'absolute', top: -12, left: 20,
-              background: '#6366f1', color: '#fff',
-              fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 100,
-              letterSpacing: '0.5px',
-            }}>🌐 公開プラン</span>
-
-            <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 8 }}>サイト公開・運用プラン</h3>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 36, fontWeight: 800, color: '#111827', letterSpacing: '-1px' }}>¥4,980</span>
-                <span style={{ fontSize: 14, color: '#6b7280' }}>/月（税込）</span>
-              </div>
-              <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>年間 ¥59,760（一括払い）</p>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                'AIが生成したサイトをそのまま公開',
-                'テキスト・写真をいつでも編集',
-                '問い合わせフォーム付き',
-                '問い合わせをメールで即時通知',
-                'SSL・サーバー代込み',
-              ].map(item => (
-                <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
-                  <span style={{ color: '#6366f1', fontWeight: 700 }}>✓</span> {item}
-                </li>
-              ))}
-            </ul>
+        {/* 支払い方法トグル */}
+        <div style={{ display: 'flex', background: '#e5e7eb', borderRadius: 12, padding: 4, marginBottom: 20, gap: 4 }}>
+          {(['monthly', 'annual'] as const).map(b => (
             <button
-              onClick={onSelectMonthly}
+              key={b}
+              onClick={() => setBilling(b)}
               style={{
-                marginTop: 'auto', padding: '14px', borderRadius: 10, border: 'none',
-                background: '#6366f1', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                flex: 1, padding: '10px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
+                fontWeight: 700, fontSize: 13, transition: 'all 0.15s',
+                background: billing === b ? '#fff' : 'transparent',
+                color: billing === b ? '#111827' : '#6b7280',
+                boxShadow: billing === b ? '0 1px 4px rgba(0,0,0,0.10)' : 'none',
               }}
             >
-              申し込む →
+              {b === 'monthly' ? '月払い' : (
+                <span>年払い <span style={{ fontSize: 11, background: '#dcfce7', color: '#16a34a', padding: '2px 6px', borderRadius: 100, fontWeight: 700 }}>2ヶ月分お得</span></span>
+              )}
             </button>
-            <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', marginTop: 12 }}>いつでも解約できます</p>
-          </div>
-
-          {/* Plan 2: プロ確認（おすすめ）- PCのみ */}
-          {!isMobile && <div style={{
-            background: '#fff', borderRadius: 20, padding: 28,
-            border: '2px solid #f59e0b',
-            display: 'flex', flexDirection: 'column', gap: 12,
-            position: 'relative',
-          }}>
-            <span style={{
-              position: 'absolute', top: -12, left: 20,
-              background: '#f59e0b', color: '#fff',
-              fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 100,
-              letterSpacing: '0.5px',
-            }}>⭐ おすすめ</span>
-
-            <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 8 }}>プロ確認オプション</h3>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 36, fontWeight: 800, color: '#111827', letterSpacing: '-1px' }}>¥50,000</span>
-                <span style={{ fontSize: 14, color: '#6b7280' }}>（一括）</span>
-              </div>
-              <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>2名ダブルチェックは ¥100,000</p>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                '月額プランの内容すべて込み',
-                '現役エンジニアによる技術確認',
-                'フォーム・メール動作確認',
-                '独自ドメイン設定（1年分含む）',
-                '1年間サポート保証',
-              ].map(item => (
-                <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
-                  <span style={{ color: '#f59e0b', fontWeight: 700 }}>✓</span> {item}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={onSelectReview}
-              style={{
-                marginTop: 'auto', padding: '14px', borderRadius: 10, border: 'none',
-                background: '#f59e0b', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer',
-              }}
-            >
-              プロに依頼する →
-            </button>
-          </div>}
-
-          {/* Plan 3: 完全オーダーメイド - PCのみ */}
-          {!isMobile && <div style={{
-            background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', borderRadius: 20, padding: 28,
-            border: '2px solid #4338ca',
-            display: 'flex', flexDirection: 'column', gap: 12,
-            position: 'relative',
-          }}>
-            <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>完全オーダーメイド</h3>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: '-1px' }}>¥500,000</span>
-                <span style={{ fontSize: 14, color: '#a5b4fc' }}>〜（一括）</span>
-              </div>
-              <p style={{ fontSize: 12, color: '#818cf8', marginTop: 4 }}>要件・規模により個別お見積り</p>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                'プロ確認プランの内容すべて込み',
-                'サイト設計・構成からお任せ',
-                'AIチャット機能をサイト内に実装',
-                '予約・決済など独自機能の設計',
-                '専任担当による伴走サポート',
-              ].map(item => (
-                <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#e0e7ff' }}>
-                  <span style={{ color: '#818cf8', fontWeight: 700 }}>✓</span> {item}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={onSelectCustom}
-              style={{
-                marginTop: 'auto', padding: '14px', borderRadius: 10, border: '1.5px solid #6366f1',
-                background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer',
-              }}
-            >
-              相談する（無料） →
-            </button>
-          </div>}
+          ))}
         </div>
 
+        {/* メインプランカード */}
+        <div style={{
+          background: '#fff', borderRadius: 16, padding: 24,
+          border: '2px solid #6366f1',
+          marginBottom: 12,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div>
+              <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>サイト公開・運用プラン</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
+                <span style={{ fontSize: 40, fontWeight: 800, color: '#111827', letterSpacing: '-1.5px', lineHeight: 1 }}>
+                  {billing === 'monthly' ? '¥4,980' : '¥50,000'}
+                </span>
+                <span style={{ fontSize: 13, color: '#6b7280' }}>
+                  {billing === 'monthly' ? '/月（税込）' : '/年（税込）'}
+                </span>
+              </div>
+              {billing === 'annual' && (
+                <p style={{ fontSize: 12, color: '#16a34a', fontWeight: 600, marginTop: 3 }}>月換算 ¥4,167 — ¥9,760お得</p>
+              )}
+            </div>
+          </div>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {features.map(item => (
+              <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
+                <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span> {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* プロ確認アドオン */}
+        <div
+          onClick={() => setWithReview(v => !v)}
+          style={{
+            background: withReview ? '#fffbeb' : '#fff',
+            border: `2px solid ${withReview ? '#f59e0b' : '#e5e7eb'}`,
+            borderRadius: 16, padding: '16px 20px', marginBottom: 20, cursor: 'pointer',
+            transition: 'all 0.15s',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>＋ プロ確認オプション</span>
+                <span style={{ fontSize: 11, background: '#fef3c7', color: '#92400e', padding: '1px 8px', borderRadius: 100, fontWeight: 600 }}>¥50,000</span>
+              </div>
+              <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5 }}>
+                現役エンジニアがフォーム・メール動作を確認。独自ドメイン設定（1年分）付き。
+              </p>
+            </div>
+            <div style={{
+              width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+              border: `2px solid ${withReview ? '#f59e0b' : '#d1d5db'}`,
+              background: withReview ? '#f59e0b' : '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {withReview && <span style={{ color: '#fff', fontSize: 14, fontWeight: 800 }}>✓</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* 合計と申し込みボタン */}
+        {withReview && (
+          <p style={{ fontSize: 13, color: '#374151', textAlign: 'right', marginBottom: 10, fontWeight: 600 }}>
+            合計: {billing === 'monthly' ? '¥4,980/月 + ¥50,000' : '¥50,000/年 + ¥50,000'}
+          </p>
+        )}
+        <button
+          onClick={() => onSelect(billing, withReview)}
+          style={{
+            width: '100%', padding: '15px', borderRadius: 12, border: 'none',
+            background: '#6366f1', color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer',
+            letterSpacing: '-0.3px',
+          }}
+        >
+          申し込む →
+        </button>
+        <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', marginTop: 10 }}>
+          いつでも解約できます
+        </p>
       </div>
     </div>
   )
@@ -520,7 +495,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   const [showPlanModal, setShowPlanModal] = useState(false)
   const [showReviewerModal, setShowReviewerModal] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'review' | 'custom' | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual' | 'review' | 'custom' | null>(null)
   const [selectedReviewer, setSelectedReviewer] = useState<string | null>(null)
   const [showToast, setShowToast] = useState(true)
   const [resetting, setResetting] = useState(false)
@@ -790,22 +765,15 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
       {showPlanModal && (
         <PlanModal
           onClose={() => setShowPlanModal(false)}
-          onSelectMonthly={() => {
-            setSelectedPlan('monthly')
-            setSelectedReviewer(null)
+          onSelect={(plan, withReview) => {
+            setSelectedPlan(plan)
             setShowPlanModal(false)
-            setShowRegisterModal(true)
-          }}
-          onSelectReview={() => {
-            setSelectedPlan('review')
-            setShowPlanModal(false)
-            setShowReviewerModal(true)
-          }}
-          onSelectCustom={() => {
-            setSelectedPlan('custom')
-            setSelectedReviewer(null)
-            setShowPlanModal(false)
-            setShowRegisterModal(true)
+            if (withReview) {
+              setShowReviewerModal(true)
+            } else {
+              setSelectedReviewer(null)
+              setShowRegisterModal(true)
+            }
           }}
         />
       )}
