@@ -334,20 +334,6 @@ function AreaSelectInput({ value, onChange }: { value: string[]; onChange: (v: s
         </p>
       )}
 
-      {/* オンライン対応可 */}
-      {(() => {
-        const isOnline = value.includes('オンライン対応可')
-        const toggleOnline = () => {
-          onChange(isOnline ? value.filter(v => v !== 'オンライン対応可') : [...value, 'オンライン対応可'])
-        }
-        return (
-          <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-colors ${isOnline ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
-            <input type="checkbox" checked={isOnline} onChange={toggleOnline} className="w-4 h-4 accent-blue-600" />
-            <span className="font-semibold text-sm text-gray-800">💻 オンライン対応可（来所不要・全国）</span>
-          </label>
-        )
-      })()}
-
       {/* 全国 */}
       <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-colors ${isNationwide ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
         <input type="checkbox" checked={isNationwide} onChange={toggleNationwide} className="w-4 h-4 accent-blue-600" />
