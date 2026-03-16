@@ -82,6 +82,28 @@ export async function generateSiteContent(input: GenerateInput): Promise<SiteCon
     ? input.styles.map(s => styleGuideMap[s] ?? s).join('、')
     : styleGuideMap['信頼感重視']
 
+  const primaryStyle = input.styles[0] ?? '信頼感重視'
+
+  const headlineGuideMap: Record<string, string> = {
+    '信頼感重視': `メインキャッチコピー（25字以内）
+【型】「〇〇の手続き、誠実にお任せください」「〇〇でお困りなら、確かな経験を」「大切な〇〇を、丁寧にサポートします」
+【ルール】体言止めまたは丁寧な語尾。感嘆符禁止。エリア名または業務名を必ず含める。`,
+
+    '親しみやすい': `メインキャッチコピー（20字以内・ひらがな多め）
+【型】「〇〇のこと、一人で悩まないで」「まず話してみませんか？」「あなたの街の身近な相談相手」「〇〇がはじめてでも大丈夫」
+【ルール】問いかけ形または呼びかけ形。難しい漢字を避ける。温かみのある言葉を使う。`,
+
+    '専門性重視': `メインキャッチコピー（30字以内）
+【型】「〇〇申請専門。要件から書類まで完全対応」「〇〇に特化した行政書士事務所」「他所で断られた〇〇案件、ご相談ください」
+【ルール】業務名を明示。「専門」「特化」「完全対応」などの専門性を示す言葉を使う。感情表現禁止。`,
+
+    '実績重視': `メインキャッチコピー（25字以内・数字を含める）
+【型】「〇〇件の実績が証明する申請力」「許可取得実績〇年。結果でお応えします」「年間〇〇件対応。〇〇なら当事務所へ」
+【ルール】具体的な数字（件数・年数）を必ず含める。断言形。「実績」「証明」「結果」などの言葉を使う。`,
+  }
+
+  const headlineGuide = headlineGuideMap[primaryStyle] ?? headlineGuideMap['信頼感重視']
+
   const prefShort = derivePrefecture(input.serviceAreas).replace(/[都道府県]$/, '')
   const areaText = input.serviceAreas.includes('全国') ? '全国' : input.serviceAreas.slice(0, 5).join('・')
 
@@ -101,7 +123,7 @@ ${input.ownerBio ? `代表者経歴: ${input.ownerBio}` : ''}
 
 {
   "hero": {
-    "headline": "メインキャッチコピー（25字以内・インパクト重視）",
+    "headline": "${headlineGuide}",
     "subheadline": "詳細説明（50字以内・サービスと場所を含める）",
     "ctaText": "CTAボタンテキスト（12字以内）",
     "ctaNote": "補足テキスト（例：相談料0円・全国対応）"
