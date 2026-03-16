@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { PublishButton } from '@/components/dashboard/PublishButton'
 import { UnpublishButton } from '@/components/dashboard/UnpublishButton'
+import { SocialLinksEditor } from '@/components/dashboard/SocialLinksEditor'
+import type { SiteContent } from '@/lib/ai-site/types'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -40,6 +42,8 @@ export default async function DashboardPage({ params }: Props) {
   })
 
   const seoKeywords = site.seoKeywords as string[]
+  const siteContent = site.siteContent as unknown as SiteContent
+  const isMonthly = site.plan === 'monthly'
 
   return (
     <div className="p-8">
@@ -144,6 +148,13 @@ export default async function DashboardPage({ params }: Props) {
           )}
         </div>
       </div>
+
+      {/* SNSリンク設定（月額プランのみ） */}
+      {isMonthly && (
+        <div className="mt-6">
+          <SocialLinksEditor slug={slug} initial={siteContent.social ?? {}} />
+        </div>
+      )}
 
       {/* AI改善提案（サンプル） */}
       <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-5">

@@ -74,6 +74,12 @@ export interface TestimonialItem {
   content: string
 }
 
+export interface SocialLinks {
+  line?: string
+  facebook?: string
+  instagram?: string
+}
+
 export interface SiteContent {
   hero: HeroContent
   services: ServiceContent[]
@@ -87,6 +93,8 @@ export interface SiteContent {
   prefectureLabel?: string
   /** 料金セクションのCTAテキスト（例: 無料相談はこちら →）。編集可能 */
   pricingCtaText?: string
+  /** SNSリンク（月額プランのみ設定可能） */
+  social?: SocialLinks
 }
 
 export interface GenerateResult {
