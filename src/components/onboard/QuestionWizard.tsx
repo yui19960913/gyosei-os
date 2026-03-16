@@ -11,7 +11,7 @@ import type { GenerateInput, UserTestimonial } from '@/lib/ai-site/types'
 
 // ---- ステップ定義 ----
 
-type StepId = 'firmName' | 'ownerName' | 'ownerEmail' | 'ownerBio' | 'services' | 'serviceAreas' | 'strengths' | 'styles' | 'userTestimonials'
+type StepId = 'firmName' | 'ownerName' | 'ownerEmail' | 'ownerBio' | 'services' | 'serviceAreas' | 'strengths' | 'styles'
 
 interface Step {
   id: StepId
@@ -83,13 +83,6 @@ const STEPS: Step[] = [
     question: '文章スタイルを選んでください（複数選択可）',
     type: 'checkbox',
     options: STYLE_OPTIONS,
-    required: false,
-  },
-  {
-    id: 'userTestimonials',
-    question: 'お客様の声を登録しますか？（任意）',
-    subtext: '実際のお客様から許可をいただいた声のみ掲載してください。最大5件まで登録できます。',
-    type: 'testimonials',
     required: false,
   },
 ]
