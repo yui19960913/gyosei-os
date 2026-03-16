@@ -17,7 +17,7 @@ interface Step {
   id: StepId
   question: string
   subtext?: string
-  type: 'text' | 'checkbox' | 'select' | 'textarea' | 'testimonials' | 'area-select'
+  type: 'text' | 'checkbox' | 'select' | 'textarea' | 'testimonials' | 'area-select' | 'strength-select'
   options?: string[]
   placeholder?: string
   maxLength?: number
@@ -73,11 +73,10 @@ const STEPS: Step[] = [
   },
   {
     id: 'strengths',
-    question: 'あなたの事務所の強みを教えてください',
-    type: 'textarea',
-    placeholder: '例）開業支援累計100件\n英語対応可能',
-    maxLength: 200,
-    required: true,
+    question: '事務所の強みを教えてください（任意）',
+    subtext: '当てはまるものを選んでください。複数選択可。',
+    type: 'strength-select',
+    required: false,
   },
   {
     id: 'styles',
@@ -180,6 +179,73 @@ function TestimonialsInput({
           + お客様の声を追加（{value.length}/5）
         </button>
       )}
+    </div>
+  )
+}
+
+// ---- 強み選択コンポーネント ----
+
+const STRENGTH_OPTIONS = [
+  '🌐 多言語対応（英語・中国語・ベトナム語など）',
+  '⚡ スピード対応（即日相談・最短申請）',
+  '💻 オンライン完結（来所不要・全国対応）',
+  '📋 専門分野に特化（在留資格・建設業許可など）',
+  '💰 明確な料金体系',
+  '🤝 地域密着・顔の見えるサポート',
+  '📅 土日祝対応',
+]
+
+function StrengthsInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const lines = value ? value.split('\n') : []
+  const selectedOptions = lines.filter(l => STRENGTH_OPTIONS.includes(l))
+  const otherText = lines.filter(l => !STRENGTH_OPTIONS.includes(l)).join('\n')
+
+  const toggleOption = (opt: string) => {
+    const next = selectedOptions.includes(opt)
+      ? selectedOptions.filter(o => o !== opt)
+      : [...selectedOptions, opt]
+    const combined = [...next, ...(otherText ? [otherText] : [])].join('\n')
+    onChange(combined)
+  }
+
+  const handleOtherChange = (text: string) => {
+    const combined = [...selectedOptions, ...(text ? [text] : [])].join('\n')
+    onChange(combined)
+  }
+
+  return (
+    <div className="space-y-2">
+      {STRENGTH_OPTIONS.map(opt => {
+        const checked = selectedOptions.includes(opt)
+        return (
+          <button
+            key={opt}
+            onClick={() => toggleOption(opt)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm text-left transition-colors ${
+              checked
+                ? 'bg-blue-600 border-blue-600 text-white'
+                : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300'
+            }`}
+          >
+            <span className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${
+              checked ? 'bg-white border-white' : 'border-gray-400'
+            }`}>
+              {checked && <span className="text-blue-600 text-xs font-bold">✓</span>}
+            </span>
+            {opt}
+          </button>
+        )
+      })}
+      <div className="mt-2">
+        <textarea
+          value={otherText}
+          onChange={e => handleOtherChange(e.target.value)}
+          placeholder="その他（自由記述）例）開業支援累計100件"
+          rows={2}
+          maxLength={200}
+          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        />
+      </div>
     </div>
   )
 }
@@ -590,6 +656,13 @@ export function QuestionWizard() {
                   )
                 })}
               </div>
+            )}
+
+            {currentStep.type === 'strength-select' && (
+              <StrengthsInput
+                value={answers.strengths as string}
+                onChange={(v) => setAnswers((prev) => ({ ...prev, strengths: v }))}
+              />
             )}
 
             {currentStep.type === 'area-select' && (
