@@ -1,83 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 export default function OnboardPage() {
   const router = useRouter()
-  const [showExplanation, setShowExplanation] = useState(false)
-
-  if (showExplanation) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(150deg, #eef2ff 0%, #f0fdf4 50%, #fdf4ff 100%)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '24px', fontFamily: "'Inter','Helvetica Neue',Arial,'Hiragino Sans',sans-serif",
-      }}>
-        <div style={{ width: '100%', maxWidth: 560 }}>
-
-          {/* 戻る */}
-          <div style={{ marginBottom: 32 }}>
-            <button
-              onClick={() => setShowExplanation(false)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontSize: 13, color: '#6b7280', background: 'none', border: 'none',
-                cursor: 'pointer', padding: 0,
-              }}
-            >
-              ← 戻る
-            </button>
-          </div>
-
-          <h2 style={{
-            fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 800,
-            color: '#1e1b4b', letterSpacing: '-1px', lineHeight: 1.3, marginBottom: 24,
-          }}>
-            はじめに
-          </h2>
-
-          <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.8, marginBottom: 36 }}>
-            インターネット上でサイトを公開するためには、<strong style={{ color: '#374151' }}>ドメイン（サイトのアドレス）</strong>・<strong style={{ color: '#374151' }}>サーバー（データの管理場所）</strong>・<strong style={{ color: '#374151' }}>表示させるページ</strong>の3つをご用意いただく必要があります。制作会社へのご依頼、もしくはご自身での個別契約・設定が必要となりますが、本サービスをご利用いただくことで、<strong style={{ color: '#374151' }}>未経験の方でも一括で設定・公開まで完結</strong>することが可能です。
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36 }}>
-            {[
-              { icon: '🌐', label: 'ドメイン', desc: 'サイトのアドレス（例: tanaka-office.com）' },
-              { icon: '🖥️', label: 'サーバー', desc: 'サイトのデータを24時間公開し続ける場所' },
-              { icon: '✨', label: '表示されるページ', desc: 'AIが5分でプロ品質のデザインを自動生成' },
-            ].map(item => (
-              <div key={item.label} style={{
-                display: 'flex', alignItems: 'center', gap: 16,
-                background: '#fff', borderRadius: 14, padding: '16px 20px',
-                border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-              }}>
-                <span style={{ fontSize: 28, flexShrink: 0 }}>{item.icon}</span>
-                <div>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{item.label}</p>
-                  <p style={{ fontSize: 13, color: '#6b7280' }}>{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => router.push('/onboard/questions')}
-            style={{
-              width: '100%', background: '#6366f1', color: '#fff', fontWeight: 700,
-              fontSize: 16, padding: '16px', borderRadius: 100,
-              border: 'none', cursor: 'pointer', letterSpacing: '-0.3px',
-              boxShadow: '0 4px 28px rgba(99,102,241,0.35)',
-            }}
-          >
-            無料でサイトを作る →
-          </button>
-
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div style={{
@@ -118,7 +44,7 @@ export default function OnboardPage() {
 
           {/* 持っていない */}
           <button
-            onClick={() => setShowExplanation(true)}
+            onClick={() => router.push('/onboard/questions')}
             style={{
               flex: 1, background: '#fff', border: '2px solid #e5e7eb',
               borderRadius: 20, padding: '28px 24px',
