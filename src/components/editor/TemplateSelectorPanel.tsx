@@ -187,21 +187,45 @@ export const GYOSEI_TEMPLATES: SiteTemplate[] = [
 ]
 
 function MiniPreview({ t }: { t: SiteTemplate }) {
-  const isDark = t.id === 'midnight-pro' || t.id === 'carbon-pro'
+  const isFullbg = t.style.heroLayout === 'fullbg'
+  const isSolidHeader = t.style.headerStyle === 'solid'
+  const headerBg = isFullbg ? 'rgba(0,0,0,0.18)' : isSolidHeader ? t.colors.primary : t.colors.surface
+  const headerTextColor = (isFullbg || isSolidHeader) ? '#fff' : t.colors.primary
+  const headerNavColor = (isFullbg || isSolidHeader) ? 'rgba(255,255,255,0.7)' : t.colors.sub
+  const headerBorder = t.style.headerStyle === 'bordered'
+    ? `2px solid ${isFullbg ? 'rgba(255,255,255,0.3)' : t.colors.accent}`
+    : t.style.headerStyle === 'minimal'
+      ? `1px solid ${isFullbg ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.07)'}`
+      : 'none'
+
   return (
-    <div style={{ background: t.colors.bg, borderRadius: '8px', overflow: 'hidden', height: '120px', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, fontFamily: t.style.fontFamily, position: 'relative' }}>
-      <div style={{ background: t.style.headerStyle === 'solid' ? t.colors.primary : t.colors.surface, borderBottom: t.style.headerStyle === 'bordered' ? `2px solid ${t.colors.accent}` : t.style.headerStyle === 'minimal' ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none', padding: '6px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ fontSize: '8px', fontWeight: 700, color: t.style.headerStyle === 'solid' ? '#fff' : t.colors.primary }}>○○行政書士事務所</div>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          {['業務内容', '料金', 'お問合せ'].map(n => (
-            <span key={n} style={{ fontSize: '6px', color: t.style.headerStyle === 'solid' ? 'rgba(255,255,255,0.8)' : t.colors.sub }}>{n}</span>
-          ))}
+    <div style={{ borderRadius: '8px 8px 0 0', overflow: 'hidden', fontFamily: t.style.fontFamily, display: 'flex', flexDirection: 'column' }}>
+      {/* メインプレビューエリア */}
+      <div style={{ background: isFullbg ? t.colors.primary : t.colors.bg, height: '140px', display: 'flex', flexDirection: 'column' }}>
+        {/* ヘッダー */}
+        <div style={{ background: headerBg, borderBottom: headerBorder, padding: '7px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div style={{ fontSize: '8px', fontWeight: 700, color: headerTextColor }}>○○行政書士事務所</div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {['業務', '料金', '相談'].map(n => (
+              <span key={n} style={{ fontSize: '6px', color: headerNavColor }}>{n}</span>
+            ))}
+          </div>
+        </div>
+        {/* ヒーロー */}
+        <div style={{ flex: 1, padding: '10px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: isFullbg ? 'transparent' : t.colors.surface }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, color: isFullbg ? '#fff' : t.colors.text, lineHeight: 1.35, marginBottom: '8px' }}>
+            お困りごとを<br />丁寧に解決します
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start', background: t.colors.accent, color: '#fff', borderRadius: t.style.borderRadius, padding: '3px 9px', fontSize: '7px', fontWeight: 700 }}>
+            無料相談はこちら
+          </div>
         </div>
       </div>
-      <div style={{ padding: '10px 10px 8px', background: t.colors.surface }}>
-        <div style={{ fontSize: '11px', fontWeight: 800, color: t.colors.text, marginBottom: '4px', lineHeight: 1.3 }}>あなたの困りごとを<br />丁寧に解決します</div>
-        <div style={{ fontSize: '7px', color: t.colors.sub, marginBottom: '8px' }}>相続・遺言・在留資格・許認可申請はお任せください</div>
-        <button style={{ background: t.colors.accent, color: '#fff', border: 'none', borderRadius: t.style.borderRadius, padding: '3px 8px', fontSize: '7px', fontWeight: 700, cursor: 'default' }}>無料相談はこちら</button>
+      {/* カラーパレット帯 */}
+      <div style={{ display: 'flex', height: '8px' }}>
+        <div style={{ flex: 2, background: t.colors.primary }} />
+        <div style={{ flex: 1, background: t.colors.accent }} />
+        <div style={{ flex: 1, background: t.colors.sub }} />
       </div>
     </div>
   )
@@ -237,7 +261,7 @@ export function TemplateSelectorPanel({ isOpen, onClose, currentTemplateId, onAp
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 60, backdropFilter: 'blur(2px)' }} />
-      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '360px', background: '#FFFFFF', borderLeft: '1px solid #E5E7EB', zIndex: 70, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '-8px 0 32px rgba(0,0,0,0.12)' }}>
+      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '400px', background: '#FFFFFF', borderLeft: '1px solid #E5E7EB', zIndex: 70, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '-8px 0 32px rgba(0,0,0,0.12)' }}>
         <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: '16px', fontWeight: 700, color: '#111827' }}>🎨 デザインテンプレート</div>
@@ -276,10 +300,11 @@ export function TemplateSelectorPanel({ isOpen, onClose, currentTemplateId, onAp
                 onMouseEnter={() => setHoveredId(t.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 style={{
-                  border: `2px solid ${isSelected ? t.colors.primary : isHovered ? '#D1D5DB' : '#F3F4F6'}`,
+                  border: `2px solid ${isSelected ? t.colors.primary : isHovered ? '#D1D5DB' : '#E5E7EB'}`,
                   borderRadius: '12px', overflow: 'hidden', cursor: 'pointer',
-                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-                  boxShadow: isSelected ? `0 0 0 3px ${t.colors.primary}30` : isHovered ? '0 4px 12px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease',
+                  boxShadow: isSelected ? `0 0 0 3px ${t.colors.primary}28` : isHovered ? '0 4px 16px rgba(0,0,0,0.10)' : '0 1px 4px rgba(0,0,0,0.04)',
+                  transform: isHovered && !isSelected ? 'translateY(-1px)' : 'none',
                 }}
               >
                 <MiniPreview t={t} />
@@ -300,7 +325,7 @@ export function TemplateSelectorPanel({ isOpen, onClose, currentTemplateId, onAp
           })}
           {filtered.length === 0 && <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: '13px', padding: '32px 0' }}>該当するテンプレートが見つかりません</div>}
         </div>
-        <div style={{ padding: '12px 20px', borderTop: '1px solid #F3F4F6', fontSize: '11px', color: '#9CA3AF', textAlign: 'center' }}>クリックで即反映 ・ 「保存」ボタンで確定</div>
+        <div style={{ padding: '12px 20px', borderTop: '1px solid #F3F4F6', fontSize: '11px', color: '#9CA3AF', textAlign: 'center' }}>クリックするとすぐ反映されます</div>
       </aside>
     </>
   )
