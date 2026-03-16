@@ -486,7 +486,7 @@ export function SiteTemplate({
     fontFamily: theme?.style.fontFamily  ?? "'Inter', 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif",
     radius:     theme?.style.borderRadius ?? '100px',
     headerStyle: theme?.style.headerStyle ?? 'minimal',
-    heroLayout: theme?.style.heroLayout  ?? 'left',
+    heroLayout: theme?.style.heroLayout  ?? 'left' as 'left' | 'center' | 'fullbg' | 'split',
   }
 
   // ── スタイル定数 ────────────────────────────────────────────────────────────
@@ -611,6 +611,49 @@ export function SiteTemplate({
             </div>
             {hero.ctaNote && <ET as="p" value={hero.ctaNote} onChange={v => upHero('ctaNote', v)} multi className="block" style={{ marginTop: 20, fontSize: 12, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.3px' } as React.CSSProperties} />}
           </div>
+        </section>
+      )}
+
+      {th.heroLayout === 'split' && (
+        <section style={{ background: th.bg, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -120, right: -120, width: 480, height: 480, borderRadius: '50%', background: `radial-gradient(circle, ${th.primary}08 0%, transparent 70%)`, pointerEvents: 'none' }} />
+          <div className="st-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', padding: '80px 24px' }}>
+            {/* 左: テキスト */}
+            <div>
+              <div style={{ marginBottom: 20 }}>
+                <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: th.primary, background: `${th.primary}14`, padding: '5px 14px', borderRadius: 100, border: `1px solid ${th.primary}30` }} />
+              </div>
+              <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block"
+                style={{ fontSize: 'clamp(28px, 4vw, 52px)' as string, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-1.5px', color: th.text, marginBottom: 20 } as React.CSSProperties} />
+              <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block"
+                style={{ fontSize: 16, color: th.sub, lineHeight: 1.85, marginBottom: 36, fontWeight: 400 } as React.CSSProperties} />
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                <a href="#contact" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: th.primary, color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: th.radius, fontSize: 15, textDecoration: 'none', letterSpacing: '-0.3px' }}>
+                  <ET value={hero.ctaText} onChange={v => upHero('ctaText', v)} style={{ pointerEvents: 'none' } as React.CSSProperties} /><span>→</span>
+                </a>
+                <a href="tel:0120000000" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1.5px solid ${th.primary}40`, color: th.primary, fontWeight: 600, padding: '13px 24px', borderRadius: 100, fontSize: 14, textDecoration: 'none' }}>
+                  📞 お電話でのご相談
+                </a>
+              </div>
+              {hero.ctaNote && <ET as="p" value={hero.ctaNote} onChange={v => upHero('ctaNote', v)} multi className="block" style={{ marginTop: 16, fontSize: 12, color: th.sub, letterSpacing: '0.3px' } as React.CSSProperties} />}
+            </div>
+            {/* 右: 代表者写真 */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+              {profile.profilePhotoUrl ? (
+                <img
+                  src={profile.profilePhotoUrl}
+                  alt={`${firmName} 代表`}
+                  style={{ width: '100%', maxWidth: 340, borderRadius: 20, objectFit: 'cover', aspectRatio: '3/4', boxShadow: `0 24px 64px ${th.primary}20` }}
+                />
+              ) : (
+                <div style={{ width: '100%', maxWidth: 340, aspectRatio: '3/4', borderRadius: 20, background: `${th.primary}10`, border: `2px dashed ${th.primary}30`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 48 }}>👤</span>
+                  <p style={{ fontSize: 13, color: th.sub, textAlign: 'center', padding: '0 16px' }}>代表者の写真を追加すると<br />ここに表示されます</p>
+                </div>
+              )}
+            </div>
+          </div>
+          <style>{`.st-hero-split-grid { grid-template-columns: 1fr !important; } @media (max-width: 640px) { .st-hero-split-grid { display: flex !important; flex-direction: column !important; } }`}</style>
         </section>
       )}
 
