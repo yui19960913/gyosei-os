@@ -556,10 +556,12 @@ export function SiteTemplate({
 
       {/* ── Hero ── */}
       {th.heroLayout === 'left' && (
-        <section style={{ background: th.bg, position: 'relative', overflow: 'hidden' }}>
+        <section style={{ position: 'relative', overflow: 'hidden', backgroundImage: `url(${fullbgHeroPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          {/* 背景オーバーレイ（テキストが見えるように薄くする） */}
+          <div style={{ position: 'absolute', inset: 0, background: th.bg, opacity: 0.88, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: -160, right: -160, width: 560, height: 560, borderRadius: '50%', background: `radial-gradient(circle, ${th.primary}10 0%, transparent 70%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -100, left: -100, width: 400, height: 400, borderRadius: '50%', background: `radial-gradient(circle, ${th.accent}08 0%, transparent 70%)`, pointerEvents: 'none' }} />
-          <div className="st-container st-hero-inner">
+          <div className="st-container st-hero-inner" style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ marginBottom: 24 }}>
               <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: th.primary, background: `${th.primary}14`, padding: '5px 14px', borderRadius: 100, border: `1px solid ${th.primary}30` }} />
             </div>
@@ -581,9 +583,11 @@ export function SiteTemplate({
       )}
 
       {th.heroLayout === 'center' && (
-        <section style={{ background: th.bg, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+        <section style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', backgroundImage: `url(${fullbgHeroPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          {/* 背景オーバーレイ（テキストが見えるように薄くする） */}
+          <div style={{ position: 'absolute', inset: 0, background: th.bg, opacity: 0.88, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 800, height: 800, borderRadius: '50%', background: `radial-gradient(circle, ${th.primary}08 0%, transparent 65%)`, pointerEvents: 'none' }} />
-          <div className="st-container st-hero-inner" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="st-container st-hero-inner" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ marginBottom: 24 }}>
               <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: th.primary, background: `${th.primary}14`, padding: '5px 14px', borderRadius: 100, border: `1px solid ${th.primary}30` }} />
             </div>

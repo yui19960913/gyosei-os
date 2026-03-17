@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: process.env.RESEND_FROM ?? 'noreply@webseisei.com',
       to: email,
-      subject: '【webseisei】サイト作成を始める',
+      subject: '【webseisei】ログイン確認メール',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
           <h2 style="font-size: 20px; color: #111;">サイト作成を始めましょう</h2>

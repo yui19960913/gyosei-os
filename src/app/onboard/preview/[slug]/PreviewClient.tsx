@@ -12,9 +12,11 @@ import type { SiteContent } from '@/lib/ai-site/types'
 function PlanModal({
   onClose,
   onSelect,
+  checkoutLoading,
 }: {
   onClose: () => void
   onSelect: (plan: 'monthly' | 'annual', withReview: boolean) => void
+  checkoutLoading?: boolean
 }) {
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const [withReview, setWithReview] = useState(false)
@@ -153,13 +155,16 @@ function PlanModal({
         )}
         <button
           onClick={() => onSelect(billing, withReview)}
+          disabled={checkoutLoading}
           style={{
             width: '100%', padding: '15px', borderRadius: 12, border: 'none',
-            background: '#6366f1', color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer',
+            background: checkoutLoading ? '#9ca3af' : '#6366f1',
+            color: '#fff', fontSize: 16, fontWeight: 700,
+            cursor: checkoutLoading ? 'not-allowed' : 'pointer',
             letterSpacing: '-0.3px',
           }}
         >
-          申し込む →
+          {checkoutLoading ? '処理中…' : '申し込む →'}
         </button>
         <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', marginTop: 10 }}>
           いつでも解約できます
@@ -500,6 +505,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
   const [selectedReviewer, setSelectedReviewer] = useState<string | null>(null)
   const [showToast, setShowToast] = useState(true)
   const [resetting, setResetting] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [viewport, setViewport] = useState<'pc' | 'iphone'>('pc')
   const [showTemplatePanel, setShowTemplatePanel] = useState(false)
@@ -586,6 +592,27 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
     } catch { /* ignore */ }
     finally { setResetting(false) }
   }, [slug, initialContent])
+
+  const handleCheckout = useCallback(async (billing: 'monthly' | 'annual') => {
+    setCheckoutLoading(true)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, billing }),
+      })
+      const data = await res.json() as { url?: string; error?: string }
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert(data.error ?? 'エラーが発生しました')
+        setCheckoutLoading(false)
+      }
+    } catch {
+      alert('エラーが発生しました')
+      setCheckoutLoading(false)
+    }
+  }, [slug])
 
   // 保存後2秒だけ「保存しました」表示
   const showSaved = savedAt !== null && Date.now() - savedAt < 2500
@@ -766,14 +793,15 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
       {showPlanModal && (
         <PlanModal
           onClose={() => setShowPlanModal(false)}
+          checkoutLoading={checkoutLoading}
           onSelect={(plan, withReview) => {
             setSelectedPlan(plan)
             setShowPlanModal(false)
             if (withReview) {
               setShowReviewerModal(true)
             } else {
-              setSelectedReviewer(null)
-              setShowRegisterModal(true)
+              // Stripe Checkoutへ直接遷移
+              void handleCheckout(plan)
             }
           }}
         />

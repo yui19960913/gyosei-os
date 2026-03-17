@@ -33,8 +33,10 @@ export async function GET(req: NextRequest) {
   const next = req.nextUrl.searchParams.get('next')
   const site = await prisma.aiSite.findFirst({ where: { ownerEmail: magic.email }, orderBy: { createdAt: 'desc' } })
 
-  const redirectPath = next ?? (site ? `/dashboard/${site.slug}` : '/')
-  const res = NextResponse.redirect(new URL(redirectPath, appUrl))
+  const redirectUrl = next
+    ? new URL(next, req.url)
+    : new URL(site ? `/dashboard/${site.slug}` : '/', appUrl)
+  const res = NextResponse.redirect(redirectUrl)
   res.cookies.set(name, value, options)
   return res
 }

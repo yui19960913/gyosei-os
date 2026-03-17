@@ -681,4 +681,55 @@ adminUrl(path: string): string
 
 ---
 
+## 11. Stripe決済
+
+### 11.1 環境変数
+
+| 変数名 | 説明 |
+|--------|------|
+| `STRIPE_SECRET_KEY` | Stripeシークレットキー（テスト: `sk_test_xxx` / 本番: `sk_live_xxx`） |
+| `STRIPE_PRICE_MONTHLY` | 月額プランの価格ID（`price_xxx`） |
+| `STRIPE_PRICE_ANNUAL` | 年額プランの価格ID（`price_xxx`） |
+| `STRIPE_WEBHOOK_SECRET` | Webhookの署名シークレット（`whsec_xxx`） |
+
+### 11.2 APIルート
+
+| ルート | メソッド | 説明 |
+|--------|---------|------|
+| `/api/stripe/checkout` | POST | Checkoutセッション作成 → StripeのURL返却 |
+| `/api/stripe/webhook` | POST | 決済完了・解約イベントを受信してDBを更新 |
+| `/api/stripe/portal` | POST | カスタマーポータル（解約・プラン変更）URL発行 |
+
+### 11.3 Webhookイベント
+
+| イベント | 処理 |
+|---------|------|
+| `checkout.session.completed` | `plan`を更新・`status`を`published`に変更・公開完了メール送信 |
+| `customer.subscription.deleted` | `plan`をnullに・`status`を`paused`に変更 |
+| `customer.subscription.updated` | `plan`・`status`をサブスクリプション状態に同期 |
+
+### 11.4 テスト用カード番号
+
+ローカル開発・テストモードでのみ使用可。
+
+| カード番号 | 動作 |
+|-----------|------|
+| `4242 4242 4242 4242` | 常に成功 |
+| `4000 0000 0000 0002` | 常に拒否（カード拒否のテスト用） |
+| `4000 0025 0000 3155` | 3Dセキュア認証が必要 |
+
+有効期限: 将来の日付であれば何でもOK（例: `12/34`）
+CVC: 任意の3桁（例: `123`）
+
+### 11.5 ローカルWebhookテスト
+
+```bash
+# Stripe CLIでWebhookをローカルに転送
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+`whsec_xxx` が表示されるので `.env` の `STRIPE_WEBHOOK_SECRET` に設定する。
+
+---
+
 *以上*
