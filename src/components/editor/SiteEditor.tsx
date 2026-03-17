@@ -346,6 +346,7 @@ export function SiteEditor({ slug, firmName, prefecture, initialContent, initial
         isOpen={showChat}
         onClose={() => setShowChat(false)}
         slug={slug}
+        isPaidPlan={isPaid}
       />
 
       {/* ── ヒント（fixed bottom） ── */}

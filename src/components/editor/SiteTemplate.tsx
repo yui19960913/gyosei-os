@@ -150,9 +150,13 @@ function CropModal({ imageSrc, onConfirm, onCancel }: {
 
 // ─── ProfilePhoto アップロード ────────────────────────────────────────────────
 
+const DEFAULT_PROFILE_PHOTO = '/images/stock/34354738_s.jpg'
+
 function ProfilePhotoUpload({ src, editable, onChange, siteSlug }: {
   src?: string; editable: boolean; onChange: (url: string) => void; siteSlug?: string
 }) {
+  const displaySrc = src || DEFAULT_PROFILE_PHOTO
+  const isDefault = !src
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading]     = useState(false)
   const [cropSrc, setCropSrc]         = useState<string | null>(null)
@@ -203,17 +207,16 @@ function ProfilePhotoUpload({ src, editable, onChange, siteSlug }: {
         style={{ width: 180, height: 220, borderRadius: 16 }}
         onClick={() => editable && fileRef.current?.click()}
       >
-        {src ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt="プロフィール写真" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-        ) : (
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={displaySrc} alt="プロフィール写真" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }} />
+        {isDefault && editable && (
           <div style={{
-            width: '100%', height: '100%',
-            background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            background: 'rgba(0,0,0,0.55)', padding: '6px 8px', textAlign: 'center',
           }}>
-            <span style={{ fontSize: 52 }}>👨‍💼</span>
-            {editable && <span style={{ fontSize: 11, color: '#6366f1', fontWeight: 600 }}>写真を追加</span>}
+            <span style={{ fontSize: 10, color: '#fff', fontWeight: 600, letterSpacing: '0.2px' }}>
+              📷 フリー素材 · クリックして差し替え
+            </span>
           </div>
         )}
         {editable && (
@@ -489,6 +492,18 @@ export function SiteTemplate({
     heroLayout: theme?.style.heroLayout  ?? 'left' as 'left' | 'center' | 'fullbg' | 'split',
   }
 
+  // fullbg テンプレート別ヒーロー背景写真
+  const FULLBG_HERO_PHOTOS: Record<string, string> = {
+    'trustful-navy':    '/images/stock/34039686_s.jpg',
+    'midnight-pro':     '/images/stock/34039686_s.jpg',
+    'deep-amethyst':    '/images/stock/34039686_s.jpg',
+    'ocean-deep':       '/images/stock/34039686_s.jpg',
+    'elegant-charcoal': '/images/stock/34156942_s.jpg',
+    'civic-blue':       '/images/stock/34156942_s.jpg',
+    'carbon-pro':       '/images/stock/34156942_s.jpg',
+  }
+  const fullbgHeroPhoto = theme?.id ? (FULLBG_HERO_PHOTOS[theme.id] ?? '/images/stock/34039686_s.jpg') : '/images/stock/34039686_s.jpg'
+
   // ── スタイル定数 ────────────────────────────────────────────────────────────
   const sectionLabel: React.CSSProperties = {
     fontSize: 11, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase' as const,
@@ -590,10 +605,12 @@ export function SiteTemplate({
       )}
 
       {th.heroLayout === 'fullbg' && (
-        <section style={{ background: th.primary, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -200, right: -200, width: 600, height: 600, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: -100, left: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
-          <div className="st-container st-hero-inner">
+        <section style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* 背景写真 */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fullbgHeroPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center top', pointerEvents: 'none' }} />
+          {/* カラーオーバーレイ */}
+          <div style={{ position: 'absolute', inset: 0, background: th.primary, opacity: 0.82, pointerEvents: 'none' }} />
+          <div className="st-container st-hero-inner" style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ marginBottom: 24 }}>
               <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.75)', background: 'rgba(255,255,255,0.12)', padding: '5px 14px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.2)' }} />
             </div>
@@ -639,18 +656,22 @@ export function SiteTemplate({
             </div>
             {/* 右: 代表者写真 */}
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
-              {profile.profilePhotoUrl ? (
+              <div style={{ position: 'relative', width: '100%', maxWidth: 340 }}>
                 <img
-                  src={profile.profilePhotoUrl}
+                  src={profile.profilePhotoUrl || DEFAULT_PROFILE_PHOTO}
                   alt={`${firmName} 代表`}
-                  style={{ width: '100%', maxWidth: 340, borderRadius: 20, objectFit: 'cover', aspectRatio: '3/4', boxShadow: `0 24px 64px ${th.primary}20` }}
+                  style={{ width: '100%', borderRadius: 20, objectFit: 'cover', objectPosition: 'top', aspectRatio: '3/4', boxShadow: `0 24px 64px ${th.primary}20`, display: 'block' }}
                 />
-              ) : (
-                <div style={{ width: '100%', maxWidth: 340, aspectRatio: '3/4', borderRadius: 20, background: `${th.primary}10`, border: `2px dashed ${th.primary}30`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                  <span style={{ fontSize: 48 }}>👤</span>
-                  <p style={{ fontSize: 13, color: th.sub, textAlign: 'center', padding: '0 16px' }}>代表者の写真を追加すると<br />ここに表示されます</p>
-                </div>
-              )}
+                {!profile.profilePhotoUrl && (
+                  <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    background: 'rgba(0,0,0,0.5)', borderRadius: '0 0 20px 20px',
+                    padding: '8px', textAlign: 'center',
+                  }}>
+                    <span style={{ fontSize: 11, color: '#fff', fontWeight: 600 }}>📷 フリー素材 · 差し替え可能</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <style>{`.st-hero-split-grid { grid-template-columns: 1fr !important; } @media (max-width: 640px) { .st-hero-split-grid { display: flex !important; flex-direction: column !important; } }`}</style>

@@ -13,8 +13,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
     if (!session || session.email !== site.ownerEmail) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    if (site.plan !== 'monthly') {
-      return NextResponse.json({ error: '月額プランのみ利用できます' }, { status: 403 })
+    if (site.plan !== 'monthly' && site.plan !== 'annual') {
+      return NextResponse.json({ error: '有料プランのみ利用できます' }, { status: 403 })
     }
 
     const { social } = await req.json() as { social: SocialLinks }

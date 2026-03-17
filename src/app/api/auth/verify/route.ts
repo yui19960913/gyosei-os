@@ -29,10 +29,11 @@ export async function GET(req: NextRequest) {
     ? 'https://app.webseisei.com'
     : 'http://localhost:3000'
 
-  // そのユーザーのサイトを取得してダッシュボードに直接リダイレクト
+  // next パラメータがあればそこへ、なければサイトのダッシュボードへ
+  const next = req.nextUrl.searchParams.get('next')
   const site = await prisma.aiSite.findFirst({ where: { ownerEmail: magic.email }, orderBy: { createdAt: 'desc' } })
 
-  const redirectPath = site ? `/dashboard/${site.slug}` : '/onboard'
+  const redirectPath = next ?? (site ? `/dashboard/${site.slug}` : '/')
   const res = NextResponse.redirect(new URL(redirectPath, appUrl))
   res.cookies.set(name, value, options)
   return res

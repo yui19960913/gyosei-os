@@ -18,6 +18,8 @@ export default async function EditorPage({ params }: Props) {
   const siteContent = site.siteContent as unknown as SiteContent
   const editorOverlay = (site.editorOverlay as unknown as CanvasElement[]) ?? []
 
+  const isPaid = site.plan === 'monthly' || site.plan === 'annual'
+
   return (
     <SiteEditor
       slug={slug}
@@ -25,6 +27,7 @@ export default async function EditorPage({ params }: Props) {
       prefecture={site.prefecture}
       initialContent={siteContent}
       initialOverlay={editorOverlay}
+      plan={isPaid ? 'paid' : 'free'}
     />
   )
 }

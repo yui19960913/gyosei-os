@@ -43,7 +43,7 @@ export default async function DashboardPage({ params }: Props) {
 
   const seoKeywords = site.seoKeywords as string[]
   const siteContent = site.siteContent as unknown as SiteContent
-  const isMonthly = site.plan === 'monthly'
+  const isMonthly = site.plan === 'monthly' || site.plan === 'annual'
 
   return (
     <div className="p-8">

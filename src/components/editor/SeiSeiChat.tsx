@@ -34,6 +34,8 @@ interface SeiSeiChatProps {
   isOpen: boolean
   onClose: () => void
   slug: string
+  /** 有料プラン加入済みならtrue → 無料回数制限をスキップ、1分10回のレート制限のみ */
+  isPaidPlan?: boolean
 }
 
 // ── コイン購入モーダル ────────────────────────────────────────────────
@@ -74,11 +76,22 @@ function CoinModal({
           padding: '12px 32px', borderRadius: 100, border: 'none',
           cursor: 'pointer', letterSpacing: '-0.3px',
           boxShadow: '0 4px 20px rgba(251,191,36,0.4)',
-          marginBottom: 10,
+          marginBottom: 12,
         }}
       >
         コインをあげる → {PACK_PRICE} / {PAID_PACK}回
       </button>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ height: 1, width: 48, background: 'rgba(255,255,255,0.2)' }} />
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>または</span>
+        <div style={{ height: 1, width: 48, background: 'rgba(255,255,255,0.2)' }} />
+      </div>
+      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 12 }}>
+        有料プランに申し込むと<br />
+        <strong style={{ color: '#fbbf24' }}>せいせいくんが無制限</strong>で使えます
+      </p>
+
       <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 12, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>
         閉じる
       </button>
@@ -142,7 +155,7 @@ function EatingShow({ fatBefore, fatAfter, onDone }: {
 }
 
 // ── メインコンポーネント ──────────────────────────────────────────────
-export function SeiSeiChat({ isOpen, onClose, slug }: SeiSeiChatProps) {
+export function SeiSeiChat({ isOpen, onClose, slug, isPaidPlan = false }: SeiSeiChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'sei', text: 'こんにちは！AIアシスタントのせいせいです😊\nサイトのことでわからないことがあれば、なんでも気軽に聞いてくださいね。' },
   ])
@@ -154,36 +167,53 @@ export function SeiSeiChat({ isOpen, onClose, slug }: SeiSeiChatProps) {
   const [showEating, setShowEating]       = useState(false)
   const [prevPaid, setPrevPaid]           = useState(0) // 食べる前のクレジット（fat計算用）
 
+  // 有料プラン用: 1分間のタイムスタンプ記録（レート制限）
+  const recentTimestamps = useRef<number[]>([])
+
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (isPaidPlan) return // 有料プランはLocalStorageカウント不要
     const count = parseInt(localStorage.getItem(LS_COUNT(slug)) ?? '0', 10)
     const paid  = parseInt(localStorage.getItem(LS_PAID(slug))  ?? '0', 10)
     setChatCount(count)
     setPaidCredits(paid)
-  }, [slug])
+  }, [slug, isPaidPlan])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const remaining    = Math.max(0, FREE_LIMIT + paidCredits - chatCount)
-  const isLimitReached = remaining === 0
-  const fatLevel     = calcFat(paidCredits)
+  const remaining    = isPaidPlan ? Infinity : Math.max(0, FREE_LIMIT + paidCredits - chatCount)
+  const isLimitReached = !isPaidPlan && remaining === 0
+  const fatLevel     = isPaidPlan ? 3 : calcFat(paidCredits)
 
   async function handleSend(text?: string) {
     const msg = text ?? input
     if (!msg.trim() || loading) return
     if (isLimitReached) { setShowCoinModal(true); return }
 
+    // 有料プラン: 1分10回レート制限
+    if (isPaidPlan) {
+      const now = Date.now()
+      recentTimestamps.current = recentTimestamps.current.filter(t => now - t < 60_000)
+      if (recentTimestamps.current.length >= 10) {
+        setMessages(prev => [...prev, { role: 'sei', text: '1分間に送れるのは10件までです。少し待ってから試してください。' }])
+        return
+      }
+      recentTimestamps.current.push(now)
+    }
+
     setInput('')
-    const newCount    = chatCount + 1
-    // 有料分を先に消費、なければ無料分
-    const newPaid     = chatCount >= FREE_LIMIT ? Math.max(0, paidCredits - 1) : paidCredits
-    setChatCount(newCount)
-    setPaidCredits(newPaid)
-    localStorage.setItem(LS_COUNT(slug), String(newCount))
-    localStorage.setItem(LS_PAID(slug),  String(newPaid))
+    if (!isPaidPlan) {
+      const newCount = chatCount + 1
+      // 有料分を先に消費、なければ無料分
+      const newPaid  = chatCount >= FREE_LIMIT ? Math.max(0, paidCredits - 1) : paidCredits
+      setChatCount(newCount)
+      setPaidCredits(newPaid)
+      localStorage.setItem(LS_COUNT(slug), String(newCount))
+      localStorage.setItem(LS_PAID(slug),  String(newPaid))
+    }
 
     setMessages(prev => [...prev, { role: 'user', text: msg }])
     setLoading(true)
@@ -222,7 +252,7 @@ export function SeiSeiChat({ isOpen, onClose, slug }: SeiSeiChatProps) {
 
   if (!isOpen) return null
 
-  const remainingColor = remaining > 5 ? '#34d399' : remaining > 2 ? '#fbbf24' : '#f87171'
+  const remainingColor = isPaidPlan ? '#34d399' : remaining > 5 ? '#34d399' : remaining > 2 ? '#fbbf24' : '#f87171'
 
   return (
     <>
@@ -271,7 +301,7 @@ export function SeiSeiChat({ isOpen, onClose, slug }: SeiSeiChatProps) {
           }}>
             <span style={{ fontSize: 13 }}>🪙</span>
             <span style={{ fontSize: 12, fontWeight: 800, color: remainingColor }}>
-              {remaining > 0 ? `残り${remaining}回` : '上限到達'}
+              {isPaidPlan ? '無制限' : remaining > 0 ? `残り${remaining}回` : '上限到達'}
             </span>
           </div>
 

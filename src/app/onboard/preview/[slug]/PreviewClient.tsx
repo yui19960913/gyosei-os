@@ -16,16 +16,16 @@ function PlanModal({
   onClose: () => void
   onSelect: (plan: 'monthly' | 'annual', withReview: boolean) => void
 }) {
-  const [billing, setBilling] = useState<'monthly' | 'annual'>('annual')
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const [withReview, setWithReview] = useState(false)
 
   const features = [
-    'AIが生成したサイトをそのまま公開',
-    'テキスト・写真をいつでも編集',
+    'サイトをそのまま公開',
+    'テキスト・写真をいつでも編集可能',
     '問い合わせフォーム付き',
     '問い合わせをメールで即時通知',
     'SSL・サーバー代込み',
-    'SNSリンク設定（LINE・Instagram等）',
+    'SNSリンク設置（LINE・Facebook等）',
   ]
 
   return (
@@ -58,7 +58,7 @@ function PlanModal({
           サイトを公開しましょう
         </h2>
         <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24, textAlign: 'center' }}>
-          今日から公開できます。いつでも解約可能。
+          今日から公開できます。
         </p>
 
         {/* 支払い方法トグル */}
@@ -111,6 +111,7 @@ function PlanModal({
               </li>
             ))}
           </ul>
+          <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 12, textAlign: 'center' }}>いつでも解約可能</p>
         </div>
 
         {/* プロ確認アドオン */}
@@ -130,7 +131,7 @@ function PlanModal({
                 <span style={{ fontSize: 11, background: '#fef3c7', color: '#92400e', padding: '1px 8px', borderRadius: 100, fontWeight: 600 }}>¥50,000</span>
               </div>
               <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5 }}>
-                現役エンジニアがフォーム・メール動作を確認。独自ドメイン設定（1年分）付き。
+                WEBサイト製作のプロが、サイトを確認。独自ドメインの取得設定サービス付き。
               </p>
             </div>
             <div style={{
@@ -240,7 +241,7 @@ function ReviewerModal({
           レビュアーを選んでください
         </h2>
         <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 36, textAlign: 'center' }}>
-          現役エンジニアが技術動作を確認し、お名前付きで承認します
+          WEBサイト製作のプロが、サイトを確認・承認します
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
