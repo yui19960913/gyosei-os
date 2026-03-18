@@ -17,7 +17,7 @@
 | `{slug}.webseisei.com` | 顧客の公開サイト | `/app/[slug]/page.tsx` |
 | `localhost:3000/{slug}` | 開発環境の公開サイト | `/app/[slug]/page.tsx` |
 
-サブドメインルーティング: `src/proxy.ts`（Host ヘッダーを解析してリライト）
+サブドメインルーティング: `src/middleware.ts`（Host ヘッダーを解析してリライト）
 URLヘルパー: `src/lib/urls.ts` の `siteUrl()`, `appUrl()`, `adminUrl()` を必ず使う
 
 ---
@@ -41,7 +41,11 @@ URLヘルパー: `src/lib/urls.ts` の `siteUrl()`, `appUrl()`, `adminUrl()` を
 | `/onboard/create` | ✅ 完成 | サービス紹介LP。「無料でサイトを作る」ボタンで質問ウィザードへ |
 | `/onboard/questions` | ✅ 完成 | 9ステップの質問ウィザード（事務所名・業務内容・エリアなど） |
 | `/onboard/preview/[slug]` | ✅ 完成 | AI生成サイトのプレビュー・インライン編集・公開申込 |
-| `/onboard/existing` | ❌ 未実装 | 「すでにサイトを持っている」人向けのページ |
+| `/onboard/existing` | ✅ 完成 | 「すでにサイトを持っている」人向けのページ |
+| `/onboard/success` | ✅ 完成 | Stripe決済完了後の申込完了ページ |
+| `/privacy` | ✅ 完成 | プライバシーポリシー |
+| `/terms` | ✅ 完成 | 利用規約 |
+| `/legal` | ✅ 完成 | 特定商取引法に基づく表記 |
 
 ### app.webseisei.com（行政書士のダッシュボード）
 
@@ -85,6 +89,7 @@ URLヘルパー: `src/lib/urls.ts` の `siteUrl()`, `appUrl()`, `adminUrl()` を
 | Auth (管理者) | NextAuth.js v5 + Credentials (bcryptjs) — `src/auth.ts` |
 | AI | Anthropic SDK `claude-haiku-4-5-20251001` — `src/lib/ai-site/generator.ts` |
 | Mail | Resend (`RESEND_FROM` 環境変数) |
+| 決済 | Stripe — `src/app/api/stripe/` |
 | Styling | Tailwind CSS v4（ページ）+ インラインスタイル（エディタ） |
 | Deploy | Vercel (サーバーレス, maxDuration=60) |
 
@@ -108,7 +113,13 @@ src/
       auth/magic/            # マジックリンク送信 (POST)
       auth/verify/           # トークン検証・セッション発行 (GET)
       auth/logout/           # ログアウト (POST)
-      editor/[slug]/         # コンテンツ保存 (PATCH)
+      editor/[slug]/         # コンテンツ保存 (PATCH, セッション必須)
+      editor/[slug]/credits/ # チャットクレジット取得・消費
+      contact/               # LP問い合わせ (POST)
+      stripe/checkout/       # サブスクリプション決済 (POST)
+      stripe/coins/checkout/ # コインパック決済 (POST)
+      stripe/portal/         # カスタマーポータル (POST)
+      stripe/webhook/        # Stripe Webhook受信 (POST)
       site/[slug]/leads/     # 問い合わせ受信 (POST)
       dashboard/[slug]/publish|unpublish/
       seo/generate/          # SEOページ生成 (POST, セッション必須)
@@ -125,12 +136,12 @@ src/
       generator.ts           # Claude API 呼び出し（ここだけ）
       hash.ts                # プロンプトハッシュ（AIコスト制御）
       types.ts               # GenerateInput / SiteContent 型
-prisma/schema.prisma         # DBスキーマ（凍結済み → docs/db-design.md で確認）
+prisma/schema.prisma         # DBスキーマ（変更前に docs/db-design.md を確認・同期すること）
 docs/
   requirements.md            # 要件定義
   spec.md                    # 技術仕様
-  db-design.md               # DBスキーマ設計（凍結済み）
-  jsonb-schema.md            # JSONBフィールド構造（凍結済み）
+  db-design.md               # DBスキーマ設計（変更時は必ず同期）
+  jsonb-schema.md            # JSONBフィールド構造
 ```
 
 ---
@@ -160,7 +171,7 @@ npx prisma db seed      # シードデータ
 
 | モデル | テーブル | 概要 |
 |--------|---------|------|
-| `AiSite` | `ai_sites` | 顧客サイト（slug, siteContent JSON, status, promptHash） |
+| `AiSite` | `ai_sites` | 顧客サイト（slug, siteContent JSON, status, plan, chatCredits, promptHash） |
 | `AiSiteLead` | `ai_site_leads` | 問い合わせリード |
 | `AiSeoPage` | `ai_seo_pages` | SEOページ |
 | `ReviewRequest` | `review_requests` | レビュー依頼（pending→in_review→approved/rejected） |
@@ -184,6 +195,11 @@ npx prisma db seed      # シードデータ
 | `AUTH_SECRET` | HMAC-SHA256 セッション署名シークレット（32バイト以上）|
 | `ADMIN_EMAIL` | 管理者メールアドレス |
 | `ADMIN_PASSWORD` | 管理者パスワード（bcrypt ハッシュ推奨）|
+| `STRIPE_SECRET_KEY` | Stripe シークレットキー |
+| `STRIPE_PRICE_MONTHLY` | 月額プランの価格ID |
+| `STRIPE_PRICE_ANNUAL` | 年額プランの価格ID |
+| `STRIPE_PRICE_COINS` | コインパック（20回/¥300）の価格ID |
+| `STRIPE_WEBHOOK_SECRET` | Webhook 署名シークレット |
 
 ---
 
