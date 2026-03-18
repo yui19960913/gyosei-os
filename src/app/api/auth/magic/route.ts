@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
-    // 古いトークンを無効化
+    // 古いトークンをすべて削除（期限切れ・使用済みも含む）
     await prisma.magicToken.deleteMany({
-      where: { email, usedAt: null, expiresAt: { gt: new Date() } },
+      where: { email },
     })
 
     // 新しいトークンを生成
