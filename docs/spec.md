@@ -648,12 +648,13 @@ type SiteContent = {
 
 | ドメイン | Vercel プロジェクト | 設定状況 |
 |---------|-----------------|---------|
-| `webseisei.com` | gyosei-os | 設定済み |
-| `*.webseisei.com` | gyosei-os | 設定済み（ワイルドカード） |
-| `app.webseisei.com` | gyosei-os | 設定済み |
-| `admin.webseisei.com` | gyosei-os | gyosei-os への付け替えが必要 |
+| `webseisei.com` | gyosei-os | ✅ Valid Configuration |
+| `www.webseisei.com` | gyosei-os | ✅ Valid Configuration |
+| `app.webseisei.com` | gyosei-os | ✅ Valid Configuration |
+| `admin.webseisei.com` | gyosei-os | ✅ Valid Configuration |
+| `*.webseisei.com` | gyosei-os | ✅ Valid Configuration（ワイルドカード） |
 
-さくらインターネット DNS でワイルドカード CNAME（`*.webseisei.com` → Vercel）設定済み。
+さくらインターネットの Whois 管理画面から Vercel への CNAME 設定済み（さくらの有料 DNS サービスは不使用）。
 
 ### 8.5 開発環境セットアップ
 
