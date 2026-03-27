@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# webseisei.com
+
+行政書士事務所向けのAI集客プラットフォーム。サイト自動生成から既存サイトの改善まで。
+
+## Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| Framework | Next.js 16 (App Router, TypeScript strict) |
+| Database | PostgreSQL ([Neon](https://neon.tech/) serverless) + [Prisma](https://www.prisma.io/) ORM |
+| Auth (user) | Custom HMAC-SHA256 JWT (magic link, passwordless) |
+| Auth (admin) | NextAuth.js v5 + Credentials (bcryptjs) |
+| AI | Anthropic Claude (`claude-haiku-4-5-20251001`) |
+| Email | [Resend](https://resend.com/) |
+| Payment | [Stripe](https://stripe.com/) (Subscription + one-time) |
+| Styling | Tailwind CSS v4 |
+| Deploy | [Vercel](https://vercel.com/) (serverless, maxDuration=60) |
+
+## Domain Structure
+
+```
+webseisei.com            → LP / onboarding
+app.webseisei.com        → User dashboard (magic link auth)
+admin.webseisei.com      → Admin panel (password auth)
+{slug}.webseisei.com     → Published client sites
+```
+
+Subdomain routing: `src/middleware.ts`
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+
+# Sync database schema
+npx prisma db push
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run dev      # Dev server (localhost:3000)
+npm run build    # prisma generate && next build
+npm run lint     # ESLint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  middleware.ts           # Subdomain routing
+  auth.ts                # NextAuth.js (admin)
+  app/
+    page.tsx              # LP
+    [slug]/page.tsx       # Published sites
+    onboard/              # Onboarding wizard → AI generation → preview
+    dashboard/[slug]/     # User dashboard
+    admin/                # Admin panel
+    api/                  # API routes
+  components/             # React components
+  lib/
+    prisma.ts             # Prisma singleton
+    session.ts            # HMAC-SHA256 session
+    urls.ts               # URL helpers
+    ai-site/generator.ts  # Claude API (single entry point)
+prisma/schema.prisma      # DB schema
+```
