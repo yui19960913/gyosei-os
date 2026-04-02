@@ -7,9 +7,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST(req: NextRequest) {
   try {
-    const { slug, billing } = await req.json() as { slug: string; billing: 'monthly' | 'annual' }
+    const { slug } = await req.json() as { slug: string }
 
-    if (!slug || !billing) {
+    if (!slug) {
       return NextResponse.json({ error: 'パラメータが不正です' }, { status: 400 })
     }
 
@@ -17,10 +17,6 @@ export async function POST(req: NextRequest) {
     if (!site) {
       return NextResponse.json({ error: 'サイトが見つかりません' }, { status: 404 })
     }
-
-    const priceId = billing === 'annual'
-      ? process.env.STRIPE_PRICE_ANNUAL!
-      : process.env.STRIPE_PRICE_MONTHLY!
 
     // セッションからメールアドレスを取得（ある場合）
     const session = await getSession()
@@ -39,10 +35,22 @@ export async function POST(req: NextRequest) {
       ? 'https://app.webseisei.com'
       : 'http://localhost:3000'
 
+    // 初期費用（¥110,000）+ 月額サブスク（¥10,780）をまとめて決済
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        // 初期セットアップ費用（一括）
+        {
+          price: process.env.STRIPE_PRICE_SETUP!,
+          quantity: 1,
+        },
+        // 月額プラン（サブスクリプション）
+        {
+          price: process.env.STRIPE_PRICE_MONTHLY!,
+          quantity: 1,
+        },
+      ],
       customer: customerId,
       customer_email: !customerId ? email : undefined,
       success_url: `${baseUrl}/onboard/success?slug=${slug}`,

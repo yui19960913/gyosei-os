@@ -15,10 +15,9 @@ function PlanModal({
   checkoutLoading,
 }: {
   onClose: () => void
-  onSelect: (plan: 'monthly' | 'annual', withReview: boolean) => void
+  onSelect: (withReview: boolean) => void
   checkoutLoading?: boolean
 }) {
-  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const [withReview, setWithReview] = useState(false)
 
   const features = [
@@ -28,6 +27,7 @@ function PlanModal({
     '問い合わせをメールで即時通知',
     'SSL・サーバー代込み',
     'SNSリンク設置（LINE・Facebook等）',
+    'Googleマップ連携',
   ]
 
   return (
@@ -63,47 +63,25 @@ function PlanModal({
           今日から公開できます。
         </p>
 
-        {/* 支払い方法トグル */}
-        <div style={{ display: 'flex', background: '#e5e7eb', borderRadius: 12, padding: 4, marginBottom: 20, gap: 4 }}>
-          {(['monthly', 'annual'] as const).map(b => (
-            <button
-              key={b}
-              onClick={() => setBilling(b)}
-              style={{
-                flex: 1, padding: '10px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
-                fontWeight: 700, fontSize: 13, transition: 'all 0.15s',
-                background: billing === b ? '#fff' : 'transparent',
-                color: billing === b ? '#111827' : '#6b7280',
-                boxShadow: billing === b ? '0 1px 4px rgba(0,0,0,0.10)' : 'none',
-              }}
-            >
-              {b === 'monthly' ? '月払い' : (
-                <span>年払い <span style={{ fontSize: 11, background: '#dcfce7', color: '#16a34a', padding: '2px 6px', borderRadius: 100, fontWeight: 700 }}>2ヶ月分お得</span></span>
-              )}
-            </button>
-          ))}
-        </div>
-
         {/* メインプランカード */}
         <div style={{
           background: '#fff', borderRadius: 16, padding: 24,
           border: '2px solid #6366f1',
           marginBottom: 12,
         }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div>
-              <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>サイト公開・運用プラン</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
-                <span style={{ fontSize: 40, fontWeight: 800, color: '#111827', letterSpacing: '-1.5px', lineHeight: 1 }}>
-                  {billing === 'monthly' ? '¥4,980' : '¥50,000'}
-                </span>
-                <span style={{ fontSize: 13, color: '#6b7280' }}>
-                  {billing === 'monthly' ? '/月（税込）' : '/年（税込）'}
-                </span>
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 8 }}>行政書士専用 Web開業パッケージ</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                <span style={{ fontSize: 12, color: '#6b7280', minWidth: 32 }}>初期</span>
+                <span style={{ fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-1.5px', lineHeight: 1 }}>¥110,000</span>
+                <span style={{ fontSize: 13, color: '#6b7280' }}>（税込）</span>
               </div>
-              {billing === 'annual' && (
-                <p style={{ fontSize: 12, color: '#16a34a', fontWeight: 600, marginTop: 3 }}>月換算 ¥4,167 — ¥9,760お得</p>
-              )}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                <span style={{ fontSize: 12, color: '#6b7280', minWidth: 32 }}>月額</span>
+                <span style={{ fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-1.5px', lineHeight: 1 }}>¥10,780</span>
+                <span style={{ fontSize: 13, color: '#6b7280' }}>（税込）</span>
+              </div>
             </div>
           </div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -150,11 +128,11 @@ function PlanModal({
         {/* 合計と申し込みボタン */}
         {withReview && (
           <p style={{ fontSize: 13, color: '#374151', textAlign: 'right', marginBottom: 10, fontWeight: 600 }}>
-            合計: {billing === 'monthly' ? '¥4,980/月 + ¥50,000' : '¥50,000/年 + ¥50,000'}
+            初期合計: ¥160,000（税込）+ 月額 ¥10,780
           </p>
         )}
         <button
-          onClick={() => onSelect(billing, withReview)}
+          onClick={() => onSelect(withReview)}
           disabled={checkoutLoading}
           style={{
             width: '100%', padding: '15px', borderRadius: 12, border: 'none',
@@ -501,7 +479,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   const [showPlanModal, setShowPlanModal] = useState(false)
   const [showReviewerModal, setShowReviewerModal] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual' | 'review' | 'custom' | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'review' | 'custom' | null>(null)
   const [selectedReviewer, setSelectedReviewer] = useState<string | null>(null)
   const [showToast, setShowToast] = useState(true)
   const [resetting, setResetting] = useState(false)
@@ -593,13 +571,13 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
     finally { setResetting(false) }
   }, [slug, initialContent])
 
-  const handleCheckout = useCallback(async (billing: 'monthly' | 'annual') => {
+  const handleCheckout = useCallback(async () => {
     setCheckoutLoading(true)
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, billing }),
+        body: JSON.stringify({ slug }),
       })
       const data = await res.json() as { url?: string; error?: string }
       if (data.url) {
@@ -792,14 +770,14 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
         <PlanModal
           onClose={() => setShowPlanModal(false)}
           checkoutLoading={checkoutLoading}
-          onSelect={(plan, withReview) => {
-            setSelectedPlan(plan)
+          onSelect={(withReview) => {
+            setSelectedPlan('monthly')
             setShowPlanModal(false)
             if (withReview) {
               setShowReviewerModal(true)
             } else {
               // Stripe Checkoutへ直接遷移
-              void handleCheckout(plan)
+              void handleCheckout()
             }
           }}
         />

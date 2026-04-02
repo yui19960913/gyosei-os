@@ -8,7 +8,7 @@ export default function Home() {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px', fontFamily: "'Inter','Helvetica Neue',Arial,'Hiragino Sans',sans-serif",
     }}>
-      <div style={{ width: '100%', maxWidth: 520 }}>
+      <div style={{ width: '100%', maxWidth: 720 }}>
 
         {/* バッジ */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -31,22 +31,23 @@ export default function Home() {
             行政書士のWeb、<br />すべておまかせ。
           </h1>
           <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.7 }}>
-            開業から廃業まで、Webはnorenにおまかせください。
+            開業から一貫して、Webをサポートします。
           </p>
         </div>
 
         {/* 2択カード */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <Link href="/onboard/create" style={{ textDecoration: 'none' }}>
+        <div className="top-cards">
+          <Link href="/login?from=onboard" style={{ textDecoration: 'none' }}>
             <div style={{
               background: '#fff', borderRadius: 16, padding: '28px 24px',
               border: '1px solid #e5e7eb',
               boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-              display: 'flex', alignItems: 'center', gap: 20,
               cursor: 'pointer', transition: 'box-shadow 0.2s, border-color 0.2s',
+              height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
+              textAlign: 'center', gap: 12,
             }}>
-              <span style={{ fontSize: 36, flexShrink: 0 }}>🚀</span>
-              <div style={{ flex: 1 }}>
+              <span style={{ fontSize: 36 }}>🚀</span>
+              <div>
                 <p style={{ fontSize: 17, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
                   新規開業の方
                 </p>
@@ -54,7 +55,7 @@ export default function Home() {
                   質問に答えるだけで、本格的なWebサイトを最短即日で公開できます。
                 </p>
               </div>
-              <span style={{ fontSize: 20, color: '#d1d5db', flexShrink: 0 }}>→</span>
+              <span style={{ fontSize: 16, color: '#6366f1', fontWeight: 600, marginTop: 'auto' }}>詳しく見る →</span>
             </div>
           </Link>
 
@@ -63,11 +64,12 @@ export default function Home() {
               background: '#fff', borderRadius: 16, padding: '28px 24px',
               border: '1px solid #e5e7eb',
               boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-              display: 'flex', alignItems: 'center', gap: 20,
               cursor: 'pointer', transition: 'box-shadow 0.2s, border-color 0.2s',
+              height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
+              textAlign: 'center', gap: 12,
             }}>
-              <span style={{ fontSize: 36, flexShrink: 0 }}>🔄</span>
-              <div style={{ flex: 1 }}>
+              <span style={{ fontSize: 36 }}>🔄</span>
+              <div>
                 <p style={{ fontSize: 17, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
                   既にサイトをお持ちの方
                 </p>
@@ -75,12 +77,16 @@ export default function Home() {
                   URLを入力するだけ。AIがサイトを無料で自動診断します。
                 </p>
               </div>
-              <span style={{ fontSize: 20, color: '#d1d5db', flexShrink: 0 }}>→</span>
+              <span style={{ fontSize: 16, color: '#6366f1', fontWeight: 600, marginTop: 'auto' }}>詳しく見る →</span>
             </div>
           </Link>
         </div>
 
       </div>
+      <style>{`
+        .top-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        @media (max-width: 640px) { .top-cards { grid-template-columns: 1fr; } }
+      `}</style>
     </div>
   )
 }

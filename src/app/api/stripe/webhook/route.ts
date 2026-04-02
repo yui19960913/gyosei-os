@@ -41,24 +41,16 @@ export async function POST(req: NextRequest) {
         const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
         const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
 
-        // サブスクリプションから billing cycle を判定
-        let plan: 'monthly' | 'annual' = 'monthly'
-        if (subscriptionId) {
-          const sub = await stripe.subscriptions.retrieve(subscriptionId)
-          const priceId = sub.items.data[0]?.price.id
-          if (priceId === process.env.STRIPE_PRICE_ANNUAL) plan = 'annual'
-        }
-
         const site = await prisma.aiSite.update({
           where: { slug },
           data: {
-            plan,
+            plan: 'monthly',
             // 自動公開しない。ユーザーがダッシュボードから手動で公開する
             stripeCustomerId: customerId,
             stripeSubscriptionId: subscriptionId,
           },
         })
-        console.log(`[stripe/webhook] checkout.session.completed: slug=${slug} plan=${plan}`)
+        console.log(`[stripe/webhook] checkout.session.completed: slug=${slug} plan=monthly`)
 
         // サイト公開完了メールを送信
         const ownerEmail = site.ownerEmail ?? (typeof session.customer_details?.email === 'string' ? session.customer_details.email : null)
@@ -112,11 +104,9 @@ export async function POST(req: NextRequest) {
         if (!slug) break
 
         if (sub.status === 'active') {
-          const priceId = sub.items.data[0]?.price.id
-          const plan = priceId === process.env.STRIPE_PRICE_ANNUAL ? 'annual' : 'monthly'
           await prisma.aiSite.update({
             where: { slug },
-            data: { plan, status: 'published' },
+            data: { plan: 'monthly', status: 'published' },
           })
         } else if (sub.status === 'canceled' || sub.status === 'unpaid') {
           await prisma.aiSite.update({

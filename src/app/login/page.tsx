@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 function LoginForm() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
+  const isOnboard = searchParams.get('from') === 'onboard'
 
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,7 +19,7 @@ function LoginForm() {
     await fetch('/api/auth/magic', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, next: isOnboard ? '/onboard/questions' : undefined }),
     })
 
     setLoading(false)
@@ -41,8 +42,14 @@ function LoginForm() {
   return (
     <>
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">ログイン</h1>
-        <p className="text-sm text-gray-500 mt-1">メールアドレスにログインリンクを送ります</p>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {isOnboard ? 'メールアドレスで始める' : 'ログイン'}
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          {isOnboard
+            ? 'メールアドレスを入力すると、サイト作成を開始できます'
+            : 'メールアドレスにログインリンクを送ります'}
+        </p>
       </div>
 
       {error && (
@@ -72,7 +79,7 @@ function LoginForm() {
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
-          {loading ? '送信中...' : 'ログインリンクを送る'}
+          {loading ? '送信中...' : isOnboard ? '始める' : 'ログインリンクを送る'}
         </button>
       </form>
     </>
