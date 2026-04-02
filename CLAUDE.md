@@ -200,6 +200,7 @@ npx prisma db seed      # シードデータ
 | `STRIPE_PRICE_ANNUAL` | 年額プランの価格ID |
 | `STRIPE_PRICE_COINS` | コインパック（20回/¥300）の価格ID |
 | `STRIPE_WEBHOOK_SECRET` | Webhook 署名シークレット |
+| `LINE_CHANNEL_ACCESS_TOKEN` | LINE Messaging API チャネルアクセストークン |
 
 ---
 

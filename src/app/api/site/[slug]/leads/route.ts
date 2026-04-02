@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { generateAutoReply, sendAutoReplyEmail, sendLeadNotificationEmail } from '@/lib/ai-site/autoreply'
+import { buildAutoReplyText, sendAutoReplyEmail, sendLeadNotificationEmail } from '@/lib/ai-site/autoreply'
+import { sendLineLeadNotification } from '@/lib/line'
 
 interface Params {
   params: Promise<{ slug: string }>
@@ -54,15 +55,12 @@ export async function POST(req: NextRequest, { params }: Params) {
     },
   })
 
-  // ── メール送信（await で確実に実行） ──────────────────────
-  // Vercel Serverless はレスポンス返却後に関数が終了するため
-  // fire-and-forget ではメール送信がキャンセルされる。必ず await する。
+  // ── 通知（並列実行、すべてbest effort） ──────────────────────
+  const tasks: Promise<unknown>[] = []
 
-  const emailTasks: Promise<unknown>[] = []
-
-  // オーナーへの通知
+  // オーナーへのメール通知
   if (site.ownerEmail) {
-    emailTasks.push(
+    tasks.push(
       sendLeadNotificationEmail({
         ownerEmail: site.ownerEmail,
         firmName: site.firmName,
@@ -71,23 +69,13 @@ export async function POST(req: NextRequest, { params }: Params) {
     )
   }
 
-  // 問い合わせ者への AI 自動返信
+  // 問い合わせ者への定型文自動返信
   if (site.autoReply && email) {
-    emailTasks.push(
+    const replyText = buildAutoReplyText({ firmName: site.firmName, name: name ?? null })
+    tasks.push(
       (async () => {
         try {
-          const replyText = await generateAutoReply({
-            firmName: site.firmName,
-            services: site.services,
-            lead: { name: name ?? null, email, phone: phone ?? null, message: message ?? null },
-          })
-
-          const sent = await sendAutoReplyEmail({
-            to: email,
-            firmName: site.firmName,
-            replyText,
-          })
-
+          const sent = await sendAutoReplyEmail({ to: email, firmName: site.firmName, replyText })
           if (sent) {
             await prisma.aiSiteLead.update({
               where: { id: lead.id },
@@ -105,7 +93,19 @@ export async function POST(req: NextRequest, { params }: Params) {
     )
   }
 
-  await Promise.all(emailTasks)
+  // オーナーへのLINE通知
+  if (site.lineUserId) {
+    tasks.push(
+      sendLineLeadNotification({
+        lineUserId: site.lineUserId,
+        name,
+        email,
+        message,
+      }).catch(err => console.error('[LINE] 通知失敗:', err))
+    )
+  }
+
+  await Promise.all(tasks)
 
   return NextResponse.json({ success: true, leadId: lead.id }, { status: 201 })
 }

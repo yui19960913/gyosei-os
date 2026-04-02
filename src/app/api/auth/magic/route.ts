@@ -5,7 +5,7 @@ import crypto from 'crypto'
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json() as { email: string }
+    const { email, next } = await req.json() as { email: string; next?: string }
     const resend = new Resend(process.env.RESEND_API_KEY)
 
     if (!email || !email.includes('@')) {
@@ -26,11 +26,12 @@ export async function POST(req: NextRequest) {
     })
 
     // メール送信
-    const appUrl = process.env.NODE_ENV === 'production'
-      ? 'https://app.webseisei.com'
-      : 'http://localhost:3000'
+    const origin = req.headers.get('origin')
+      || (process.env.NODE_ENV === 'production' ? 'https://app.webseisei.com' : 'http://localhost:3000')
 
-    const loginUrl = `${appUrl}/api/auth/verify?token=${token}`
+    const verifyParams = new URLSearchParams({ token })
+    if (next) verifyParams.set('next', next)
+    const loginUrl = `${origin}/api/auth/verify?${verifyParams.toString()}`
 
     const { error: sendError } = await resend.emails.send({
       from: process.env.RESEND_FROM ?? 'noreply@webseisei.com',

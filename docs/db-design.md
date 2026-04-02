@@ -58,6 +58,8 @@ CREATE TABLE ai_sites (
   stripe_subscription_id VARCHAR(100),
   -- チャットクレジット（コインパック購入で加算）
   chat_credits          INTEGER NOT NULL DEFAULT 0,
+  -- LINE通知
+  line_user_id          VARCHAR(100),               -- 行政書士のLINE User ID（Messaging API）
   created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

@@ -74,15 +74,17 @@ export async function getSession(): Promise<{ email: string; role: 'admin' | 'us
 }
 
 export function sessionCookieOptions(value: string) {
+  const isProduction = process.env.NODE_ENV === 'production'
   return {
     name: COOKIE_NAME,
     value,
     options: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'lax' as const,
       maxAge: MAX_AGE,
       path: '/',
+      ...(isProduction ? { domain: '.webseisei.com' } : {}),
     },
   }
 }

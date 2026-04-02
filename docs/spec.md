@@ -289,8 +289,10 @@ Vercel maxDuration: 60秒
 処理フロー:
 1. AiSite を slug で検索（status=published であること）
 2. AiSiteLead レコードを作成
-3. Resend でオーナー通知メールを送信（ownerEmail 宛）
-4. autoReply=true の場合、Resend で自動返信メールを送信（問い合わせ者宛）
+3. 以下を並列実行（Promise.all、すべてbest effort）:
+   a. Resend でオーナー通知メールを送信（ownerEmail 宛）
+   b. autoReply=true の場合、定型文の受付確認メールを送信（問い合わせ者宛）
+   c. lineUserId がある場合、LINE Messaging API でオーナーにPush通知
 ```
 
 ### 4.5 お問い合わせ系（webseisei.com LP向け）
