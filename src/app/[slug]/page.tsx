@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { SiteTemplate } from '@/components/editor/SiteTemplate'
-import { GYOSEI_TEMPLATES } from '@/components/editor/TemplateSelectorPanel'
+import { GYOSEI_TEMPLATES } from '@/lib/templates'
 import type { SiteContent } from '@/lib/ai-site/types'
 
 interface Props {
