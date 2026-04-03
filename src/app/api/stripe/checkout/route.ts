@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       ? 'https://app.webseisei.com'
       : 'http://localhost:3000'
 
-    // 初期費用（¥110,000）+ 月額サブスク（¥10,780）をまとめて決済
+    // 初期費用（¥98,000）+ 月額サブスク（¥9,800）をまとめて決済
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],

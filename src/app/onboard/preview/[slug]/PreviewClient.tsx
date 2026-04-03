@@ -15,19 +15,24 @@ function PlanModal({
   checkoutLoading,
 }: {
   onClose: () => void
-  onSelect: (withReview: boolean) => void
+  onSelect: () => void
   checkoutLoading?: boolean
 }) {
-  const [withReview, setWithReview] = useState(false)
+  const step1Features = [
+    'プロによるサイト確認・公開',
+    '独自ドメイン取得・設定',
+    '事務所メールアドレス発行',
+    '問い合わせフォーム設定',
+    'Googleマップ連携',
+  ]
 
-  const features = [
-    'サイトをそのまま公開',
+  const step2Features = [
+    'サイト運用・保守',
     'テキスト・写真をいつでも編集可能',
-    '問い合わせフォーム付き',
-    '問い合わせをメールで即時通知',
+    '問い合わせ管理・自動通知',
     'SSL・サーバー代込み',
     'SNSリンク設置（LINE・Facebook等）',
-    'Googleマップ連携',
+    'サポート対応',
   ]
 
   return (
@@ -43,7 +48,7 @@ function PlanModal({
       <div
         style={{
           background: '#f9fafb', borderRadius: 24, padding: 'clamp(24px, 4vw, 40px) clamp(16px, 4vw, 36px)',
-          maxWidth: 520, width: '100%',
+          maxWidth: 680, width: '100%',
           boxShadow: '0 24px 80px rgba(0,0,0,0.25)',
           position: 'relative',
         }}
@@ -57,82 +62,63 @@ function PlanModal({
         }}>×</button>
 
         <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 6, letterSpacing: '-0.5px', textAlign: 'center' }}>
-          サイトを公開しましょう
+          シンプルな2ステップ料金
         </h2>
         <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24, textAlign: 'center' }}>
-          今日から公開できます。
+          行政書士専用 Web開業パッケージ
         </p>
 
-        {/* メインプランカード */}
-        <div style={{
-          background: '#fff', borderRadius: 16, padding: 24,
-          border: '2px solid #6366f1',
-          marginBottom: 12,
-        }}>
-          <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 8 }}>行政書士専用 Web開業パッケージ</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                <span style={{ fontSize: 12, color: '#6b7280', minWidth: 32 }}>初期</span>
-                <span style={{ fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-1.5px', lineHeight: 1 }}>¥110,000</span>
-                <span style={{ fontSize: 13, color: '#6b7280' }}>（税込）</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                <span style={{ fontSize: 12, color: '#6b7280', minWidth: 32 }}>月額</span>
-                <span style={{ fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-1.5px', lineHeight: 1 }}>¥10,780</span>
-                <span style={{ fontSize: 13, color: '#6b7280' }}>（税込）</span>
-              </div>
+        {/* 2ステップカード横並び */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+          {/* STEP 1 */}
+          <div style={{
+            background: '#fff', borderRadius: 16, padding: 20,
+            border: '2px solid #6366f1',
+          }}>
+            <span style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 700, color: '#6366f1',
+              background: '#eef2ff', padding: '3px 10px', borderRadius: 100, marginBottom: 12,
+            }}>STEP 1</span>
+            <p style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>初期セットアップ</p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 16 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: '#111827', letterSpacing: '-1px', lineHeight: 1 }}>¥98,000</span>
+              <span style={{ fontSize: 12, color: '#6b7280' }}>（税込）</span>
             </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {step1Features.map(item => (
+                <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 12, color: '#374151', lineHeight: 1.5 }}>
+                  <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span> {item}
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {features.map(item => (
-              <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
-                <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span> {item}
-              </li>
-            ))}
-          </ul>
-          <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 12, textAlign: 'center' }}>いつでも解約可能</p>
-        </div>
 
-        {/* プロ確認アドオン */}
-        <div
-          onClick={() => setWithReview(v => !v)}
-          style={{
-            background: withReview ? '#fffbeb' : '#fff',
-            border: `2px solid ${withReview ? '#f59e0b' : '#e5e7eb'}`,
-            borderRadius: 16, padding: '16px 20px', marginBottom: 20, cursor: 'pointer',
-            transition: 'all 0.15s',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>＋ プロ確認オプション</span>
-                <span style={{ fontSize: 11, background: '#fef3c7', color: '#92400e', padding: '1px 8px', borderRadius: 100, fontWeight: 600 }}>¥50,000</span>
-              </div>
-              <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5 }}>
-                WEBサイト製作のプロが、サイトを確認。独自ドメインの取得設定サービス付き。
-              </p>
+          {/* STEP 2 */}
+          <div style={{
+            background: '#fff', borderRadius: 16, padding: 20,
+            border: '2px solid #6366f1',
+          }}>
+            <span style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 700, color: '#6366f1',
+              background: '#eef2ff', padding: '3px 10px', borderRadius: 100, marginBottom: 12,
+            }}>STEP 2</span>
+            <p style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>月額プラン</p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 16 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: '#111827', letterSpacing: '-1px', lineHeight: 1 }}>¥9,800</span>
+              <span style={{ fontSize: 12, color: '#6b7280' }}>/月（税込）</span>
             </div>
-            <div style={{
-              width: 24, height: 24, borderRadius: 6, flexShrink: 0,
-              border: `2px solid ${withReview ? '#f59e0b' : '#d1d5db'}`,
-              background: withReview ? '#f59e0b' : '#fff',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {withReview && <span style={{ color: '#fff', fontSize: 14, fontWeight: 800 }}>✓</span>}
-            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {step2Features.map(item => (
+                <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 12, color: '#374151', lineHeight: 1.5 }}>
+                  <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span> {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* 合計と申し込みボタン */}
-        {withReview && (
-          <p style={{ fontSize: 13, color: '#374151', textAlign: 'right', marginBottom: 10, fontWeight: 600 }}>
-            初期合計: ¥160,000（税込）+ 月額 ¥10,780
-          </p>
-        )}
         <button
-          onClick={() => onSelect(withReview)}
+          onClick={() => onSelect()}
           disabled={checkoutLoading}
           style={{
             width: '100%', padding: '15px', borderRadius: 12, border: 'none',
@@ -770,15 +756,10 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
         <PlanModal
           onClose={() => setShowPlanModal(false)}
           checkoutLoading={checkoutLoading}
-          onSelect={(withReview) => {
+          onSelect={() => {
             setSelectedPlan('monthly')
             setShowPlanModal(false)
-            if (withReview) {
-              setShowReviewerModal(true)
-            } else {
-              // Stripe Checkoutへ直接遷移
-              void handleCheckout()
-            }
+            void handleCheckout()
           }}
         />
       )}
