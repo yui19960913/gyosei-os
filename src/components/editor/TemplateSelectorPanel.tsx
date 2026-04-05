@@ -106,42 +106,49 @@ export function TemplateSelectorPanel({ isOpen, onClose, currentTemplateId, onAp
           ))}
         </div>
         <div
-          style={{ height: 'calc(100vh - 160px)', overflowY: 'scroll', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '10px', overscrollBehavior: 'contain' }}
+          style={{ height: 'calc(100vh - 160px)', overflowY: 'scroll', padding: '12px 12px', overscrollBehavior: 'contain' }}
           onWheel={e => e.stopPropagation()}
         >
-          {filtered.map(t => {
-            const isSelected = appliedId === t.id
-            const isHovered = hoveredId === t.id
-            return (
-              <div
-                key={t.id}
-                onClick={() => { setAppliedId(t.id); onApply(t) }}
-                onMouseEnter={() => setHoveredId(t.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                style={{
-                  border: `2px solid ${isSelected ? t.colors.primary : isHovered ? '#D1D5DB' : '#E5E7EB'}`,
-                  borderRadius: '12px', overflow: 'hidden', cursor: 'pointer',
-                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease',
-                  boxShadow: isSelected ? `0 0 0 3px ${t.colors.primary}28` : isHovered ? '0 4px 16px rgba(0,0,0,0.10)' : '0 1px 4px rgba(0,0,0,0.04)',
-                  transform: isHovered && !isSelected ? 'translateY(-1px)' : 'none',
-                }}
-              >
-                <MiniPreview t={t} />
-                <div style={{ padding: '10px 12px', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#111827' }}>{t.name}</span>
-                      <span style={{ fontSize: '10px', background: `${t.colors.primary}14`, color: t.colors.primary, padding: '1px 7px', borderRadius: '999px', fontWeight: 600, flexShrink: 0 }}>{t.tag}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            {filtered.map(t => {
+              const isSelected = appliedId === t.id
+              const isHovered = hoveredId === t.id
+              return (
+                <div
+                  key={t.id}
+                  onClick={() => { setAppliedId(t.id); onApply(t) }}
+                  onMouseEnter={() => setHoveredId(t.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  style={{
+                    border: `2px solid ${isSelected ? t.colors.primary : isHovered ? '#D1D5DB' : '#E5E7EB'}`,
+                    borderRadius: '12px', overflow: 'hidden', cursor: 'pointer',
+                    transition: 'border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease',
+                    boxShadow: isSelected ? `0 0 0 3px ${t.colors.primary}28` : isHovered ? '0 4px 16px rgba(0,0,0,0.10)' : '0 1px 4px rgba(0,0,0,0.04)',
+                    transform: isHovered && !isSelected ? 'translateY(-1px)' : 'none',
+                    display: 'flex', flexDirection: 'column',
+                  }}
+                >
+                  <MiniPreview t={t} />
+                  <div style={{ padding: '8px 10px', background: '#FFFFFF', flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#111827' }}>{t.name}</span>
+                      <span style={{ fontSize: '9px', background: `${t.colors.primary}14`, color: t.colors.primary, padding: '1px 6px', borderRadius: '999px', fontWeight: 600 }}>{t.tag}</span>
                     </div>
-                    <div style={{ fontSize: '11px', color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.desc}</div>
-                  </div>
-                  <div style={{ background: isSelected ? t.colors.primary : '#F3F4F6', color: isSelected ? '#fff' : '#374151', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap' }}>
-                    {isSelected ? '✓ 適用中' : '適用'}
+                    <div style={{ fontSize: '10px', color: '#9CA3AF', lineHeight: 1.4 }}>{t.desc}</div>
+                    <div style={{
+                      marginTop: 'auto', paddingTop: '6px',
+                      background: isSelected ? t.colors.primary : '#F3F4F6',
+                      color: isSelected ? '#fff' : '#374151',
+                      borderRadius: '6px', padding: '4px 0', fontSize: '11px', fontWeight: 700,
+                      textAlign: 'center',
+                    }}>
+                      {isSelected ? '✓ 適用中' : '適用'}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
           {filtered.length === 0 && <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: '13px', padding: '32px 0' }}>該当するテンプレートが見つかりません</div>}
         </div>
         <div style={{ padding: '12px 20px', borderTop: '1px solid #F3F4F6', fontSize: '11px', color: '#9CA3AF', textAlign: 'center' }}>クリックするとすぐ反映されます</div>
