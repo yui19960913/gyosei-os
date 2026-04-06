@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     const { error: sendError } = await resend.emails.send({
       from: process.env.RESEND_FROM ?? 'noreply@webseisei.com',
       to: email,
-      subject: '【hanjyo】ログインリンク',
+      subject: '【norensan】ログインリンク',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
           <h2 style="font-size: 20px; color: #111;">ログインリンク</h2>
