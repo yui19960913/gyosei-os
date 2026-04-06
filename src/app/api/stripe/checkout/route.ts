@@ -35,17 +35,12 @@ export async function POST(req: NextRequest) {
       ? 'https://app.webseisei.com'
       : 'http://localhost:3000'
 
-    // 初期費用（¥98,000）+ 月額サブスク（¥9,800）をまとめて決済
+    // 月額サブスク（¥9,800）のみ — 初期費用は期間限定無料キャンペーン中
+    // キャンペーン終了時: STRIPE_PRICE_SETUP の line_item を復活させる
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [
-        // 初期セットアップ費用（一括）
-        {
-          price: process.env.STRIPE_PRICE_SETUP!,
-          quantity: 1,
-        },
-        // 月額プラン（サブスクリプション）
         {
           price: process.env.STRIPE_PRICE_MONTHLY!,
           quantity: 1,

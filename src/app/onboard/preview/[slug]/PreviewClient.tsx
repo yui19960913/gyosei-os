@@ -80,10 +80,18 @@ function PlanModal({
               background: '#eef2ff', padding: '3px 10px', borderRadius: 100, marginBottom: 12,
             }}>STEP 1</span>
             <p style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>初期セットアップ</p>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 16 }}>
-              <span style={{ fontSize: 28, fontWeight: 800, color: '#111827', letterSpacing: '-1px', lineHeight: 1 }}>¥98,000</span>
+            <div style={{ marginBottom: 6 }}>
+              <span style={{
+                display: 'inline-block', fontSize: 10, fontWeight: 700, color: '#fff',
+                background: '#ef4444', padding: '2px 8px', borderRadius: 4, marginBottom: 4,
+              }}>今だけ限定無料</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+              <span style={{ fontSize: 16, color: '#9ca3af', textDecoration: 'line-through', fontWeight: 600 }}>¥98,000</span>
+              <span style={{ fontSize: 28, fontWeight: 800, color: '#ef4444', letterSpacing: '-1px', lineHeight: 1 }}>¥0</span>
               <span style={{ fontSize: 12, color: '#6b7280' }}>（税込）</span>
             </div>
+            <p style={{ fontSize: 10, color: '#6b7280', marginBottom: 12 }}>※ 補助金事業者登録前の期間限定キャンペーン</p>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
               {step1Features.map(item => (
                 <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 12, color: '#374151', lineHeight: 1.5 }}>
