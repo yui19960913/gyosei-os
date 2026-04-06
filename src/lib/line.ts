@@ -16,7 +16,7 @@ export async function sendLineLeadNotification(input: LineLeadNotification): Pro
   }
 
   const text = [
-    '【norenより】新しい問い合わせが届きました',
+    '【hanjyoより】新しい問い合わせが届きました',
     '',
     `お名前：${input.name ?? '未記入'}`,
     `メール：${input.email ?? '未記入'}`,

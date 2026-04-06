@@ -38,7 +38,7 @@ export async function sendLeadNotificationEmail({
   ].join('\n')
 
   const { error } = await resend.emails.send({
-    from: `noren <${fromAddress}>`,
+    from: `hanjyo <${fromAddress}>`,
     to: ownerEmail,
     subject: `【新規問い合わせ】${firmName}`,
     text: body,
