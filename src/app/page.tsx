@@ -28,10 +28,10 @@ export default function Home() {
             fontSize: 'clamp(26px, 5vw, 36px)', fontWeight: 800,
             color: '#1e1b4b', letterSpacing: '-1.5px', lineHeight: 1.2, marginBottom: 14,
           }}>
-            行政書士のWeb、<br />すべておまかせ。
+            行政書士の<br />ホームページ生成なら
           </h1>
           <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.7 }}>
-            開業から一貫して、Webをサポートします。
+            ウェブ周りはこれだけ。
           </p>
         </div>
 
