@@ -169,32 +169,6 @@ export default function ExistingPage() {
                 </div>
               </div>
 
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                marginBottom: 12, paddingBottom: 12,
-                borderBottom: '1px dashed #e5e7eb',
-              }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-                  <defs>
-                    <linearGradient id="crystalGrad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#a5b4fc" />
-                      <stop offset="50%" stopColor="#6366f1" />
-                      <stop offset="100%" stopColor="#4338ca" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 2 L20 9 L12 22 L4 9 Z" fill="url(#crystalGrad)" stroke="#fff" strokeWidth="0.8" strokeLinejoin="round" />
-                  <path d="M4 9 L20 9 M12 2 L12 22 M8 9 L12 22 M16 9 L12 22" stroke="#fff" strokeWidth="0.8" strokeOpacity="0.6" />
-                </svg>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#1e1b4b' }}>
-                    診断した{audit.items.length}項目（100点満点）
-                  </div>
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
-                    すべて公開HTMLから機械的に測定。透明な基準でスコアを算出しています。
-                  </div>
-                </div>
-              </div>
-
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {audit.items.map(item => {
                   const ratio = item.score / item.max
