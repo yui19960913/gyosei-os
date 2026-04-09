@@ -99,6 +99,8 @@ export async function generateSiteContent(input: GenerateInput): Promise<SiteCon
 【選択指針】
 - 事務所の雰囲気・スタイルに最も合うものを選ぶ
 - {事務所名}には「${input.firmName}」を入れる
+- 25文字以内を目安にする（{事務所名}展開後の文字数で判断）
+- 20文字を超える場合は、読点・助詞など自然な位置に<br>を1つ挿入して改行位置を明示する
 
 【禁止ルール】
 - 述語だけで終わるフレーズ禁止（「誠実に」「真摯に」など副詞のみで終わるもの）

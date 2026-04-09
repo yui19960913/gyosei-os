@@ -417,7 +417,7 @@ export function SiteTemplate({
 
   const cb = editable && onUpdate ? onUpdate : undefined
 
-  const upHero     = (k: keyof typeof hero,    v: string) => cb?.({ ...content, hero:    { ...hero,    [k]: v } })
+  const upHero     = (k: keyof typeof hero,    v: string | number) => cb?.({ ...content, hero:    { ...hero,    [k]: v } })
   const upCta      = (k: keyof typeof cta,     v: string) => cb?.({ ...content, cta:     { ...cta,     [k]: v } })
   const upProfile  = (k: keyof typeof profile, v: string) => cb?.({ ...content, profile: { ...profile, [k]: v } })
   const upService  = (i: number, k: keyof (typeof services)[0], v: string) => {
@@ -567,7 +567,14 @@ export function SiteTemplate({
               <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: th.primary, background: `${th.primary}14`, padding: '5px 14px', borderRadius: 100, border: `1px solid ${th.primary}30` }} />
             </div>
             <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block st-hero-title"
-              style={{ fontSize: 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: th.text, marginBottom: 24, maxWidth: 780 } as React.CSSProperties} />
+              style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: th.text, marginBottom: 24, maxWidth: 780 } as React.CSSProperties} />
+            {editable && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <label style={{ fontSize: 11, color: th.sub, whiteSpace: 'nowrap' }}>文字サイズ</label>
+                <input type="range" min={24} max={72} step={1} value={hero.heroFontSize ?? 48} onChange={e => upHero('heroFontSize', Number(e.target.value))} style={{ width: 120 }} />
+                <span style={{ fontSize: 11, color: th.sub, minWidth: 32 }}>{hero.heroFontSize ?? 48}px</span>
+              </div>
+            )}
             <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block st-hero-sub"
               style={{ fontSize: 17, color: th.sub, lineHeight: 1.8, maxWidth: 520, marginBottom: 44, fontWeight: 400 } as React.CSSProperties} />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }} className="st-hero-btns">
@@ -593,7 +600,14 @@ export function SiteTemplate({
               <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: th.primary, background: `${th.primary}14`, padding: '5px 14px', borderRadius: 100, border: `1px solid ${th.primary}30` }} />
             </div>
             <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block st-hero-title"
-              style={{ fontSize: 'clamp(36px, 5vw, 60px)' as string, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-2px', color: th.text, marginBottom: 24, maxWidth: 700 } as React.CSSProperties} />
+              style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(36px, 5vw, 60px)' as string, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-2px', color: th.text, marginBottom: 24, maxWidth: 700 } as React.CSSProperties} />
+            {editable && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <label style={{ fontSize: 11, color: th.sub, whiteSpace: 'nowrap' }}>文字サイズ</label>
+                <input type="range" min={24} max={72} step={1} value={hero.heroFontSize ?? 48} onChange={e => upHero('heroFontSize', Number(e.target.value))} style={{ width: 120 }} />
+                <span style={{ fontSize: 11, color: th.sub, minWidth: 32 }}>{hero.heroFontSize ?? 48}px</span>
+              </div>
+            )}
             <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block st-hero-sub"
               style={{ fontSize: 17, color: th.sub, lineHeight: 1.8, maxWidth: 500, marginBottom: 44, fontWeight: 400 } as React.CSSProperties} />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }} className="st-hero-btns">
@@ -620,7 +634,14 @@ export function SiteTemplate({
               <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.75)', background: 'rgba(255,255,255,0.12)', padding: '5px 14px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.2)' }} />
             </div>
             <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block st-hero-title"
-              style={{ fontSize: 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: '#ffffff', marginBottom: 24, maxWidth: 780 } as React.CSSProperties} />
+              style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: '#ffffff', marginBottom: 24, maxWidth: 780 } as React.CSSProperties} />
+            {editable && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <label style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>文字サイズ</label>
+                <input type="range" min={24} max={72} step={1} value={hero.heroFontSize ?? 48} onChange={e => upHero('heroFontSize', Number(e.target.value))} style={{ width: 120 }} />
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', minWidth: 32 }}>{hero.heroFontSize ?? 48}px</span>
+              </div>
+            )}
             <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block st-hero-sub"
               style={{ fontSize: 17, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, maxWidth: 520, marginBottom: 44, fontWeight: 400 } as React.CSSProperties} />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }} className="st-hero-btns">
@@ -646,7 +667,14 @@ export function SiteTemplate({
                 <ET as="span" value={prefLabel} onChange={editable ? upPrefectureLabel : undefined} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: th.primary, background: `${th.primary}14`, padding: '5px 14px', borderRadius: 100, border: `1px solid ${th.primary}30` }} />
               </div>
               <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block"
-                style={{ fontSize: 'clamp(28px, 4vw, 52px)' as string, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-1.5px', color: th.text, marginBottom: 20 } as React.CSSProperties} />
+                style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(28px, 4vw, 52px)' as string, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-1.5px', color: th.text, marginBottom: 20 } as React.CSSProperties} />
+              {editable && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <label style={{ fontSize: 11, color: th.sub, whiteSpace: 'nowrap' }}>文字サイズ</label>
+                  <input type="range" min={24} max={72} step={1} value={hero.heroFontSize ?? 40} onChange={e => upHero('heroFontSize', Number(e.target.value))} style={{ width: 120 }} />
+                  <span style={{ fontSize: 11, color: th.sub, minWidth: 32 }}>{hero.heroFontSize ?? 40}px</span>
+                </div>
+              )}
               <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block"
                 style={{ fontSize: 16, color: th.sub, lineHeight: 1.85, marginBottom: 36, fontWeight: 400 } as React.CSSProperties} />
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>

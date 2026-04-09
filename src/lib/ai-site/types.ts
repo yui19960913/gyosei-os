@@ -33,6 +33,7 @@ export interface HeroContent {
   subheadline: string
   ctaText: string
   ctaNote: string
+  heroFontSize?: number
 }
 
 export interface ServiceContent {
