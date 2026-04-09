@@ -236,11 +236,12 @@ export default function ExistingPage() {
           )}
         </div>
 
-        {/* プロに無料相談 */}
+        {/* プロに無料相談（診断後に表示） */}
         <div style={{
           background: '#fff', borderRadius: 20, padding: 'clamp(28px, 4vw, 40px)',
           border: '1px solid #e5e7eb',
           boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
+          display: audit ? 'block' : 'none',
         }}>
           {sent ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
