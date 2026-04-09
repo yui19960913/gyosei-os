@@ -340,9 +340,6 @@ export default function ExistingPage() {
           )}
         </div>
 
-        <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', marginTop: 20 }}>
-          強引な営業は一切行いません
-        </p>
       </div>
     </div>
   )
