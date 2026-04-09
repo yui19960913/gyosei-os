@@ -86,38 +86,6 @@ export default function ExistingPage() {
           </span>
         </div>
 
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <h1 style={{
-            fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 800,
-            color: '#1e1b4b', letterSpacing: '-1px', lineHeight: 1.3, marginBottom: 12,
-          }}>
-            今のサイトに<br />満足していますか？
-          </h1>
-          <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.8 }}>
-            問い合わせが少ない・更新が面倒・デザインが古い。<br />
-            そんなお悩みがあれば、お気軽にご相談ください。
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 40 }}>
-          {[
-            '問い合わせがほとんど来ない',
-            'サイトの更新が手間でそのままになっている',
-            'デザインが古くなってきた気がする',
-            '費用が高い割に効果を感じない',
-          ].map(text => (
-            <div key={text} style={{
-              background: '#fff', border: '1px solid #e5e7eb',
-              borderRadius: 12, padding: '14px 20px',
-              display: 'flex', alignItems: 'center', gap: 12,
-              fontSize: 14, color: '#374151',
-            }}>
-              <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
-              {text}
-            </div>
-          ))}
-        </div>
-
         {/* サイト診断 */}
         <div style={{
           background: '#fff', borderRadius: 20, padding: 'clamp(28px, 4vw, 40px)',
