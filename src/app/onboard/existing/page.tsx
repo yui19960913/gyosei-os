@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 
 type AuditItem = { key: string; label: string; score: number; max: number; message: string }
@@ -211,6 +212,28 @@ export default function ExistingPage() {
           )}
         </div>
 
+        {/* サイト生成サービスを試す */}
+        <Link href="/onboard/create" style={{ textDecoration: 'none' }}>
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: 'clamp(24px, 4vw, 32px)',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
+            marginBottom: 24, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
+                サイト生成サービスを無料で試す
+              </h2>
+              <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.7 }}>
+                いくつかの質問に答えるだけで、AIが新しいサイトを5分で作成します。
+              </p>
+            </div>
+            <span style={{ fontSize: 20, color: '#6366f1', flexShrink: 0 }}>→</span>
+          </div>
+        </Link>
+
+        {/* プロに無料相談 */}
         <div style={{
           background: '#fff', borderRadius: 20, padding: 'clamp(28px, 4vw, 40px)',
           border: '1px solid #e5e7eb',
@@ -230,10 +253,10 @@ export default function ExistingPage() {
           ) : (
             <>
               <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
-                無料相談を申し込む
+                プロに無料相談する
               </h2>
               <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24 }}>
-                現在のサイトの状況をお聞かせください。
+                現在のサイトの状況をお聞かせください。専門スタッフがご返信します。
               </p>
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
