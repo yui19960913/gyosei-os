@@ -55,7 +55,7 @@ export default function Home() {
                   質問に答えるだけで、本格的なWebサイトを最短即日で公開できます。
                 </p>
               </div>
-              <span style={{ fontSize: 16, color: '#6366f1', fontWeight: 600, marginTop: 'auto' }}>詳しく見る →</span>
+              <span style={{ fontSize: 16, color: '#6366f1', fontWeight: 600, marginTop: 'auto' }}>無料でサイトを生成してみる →</span>
             </div>
           </Link>
 
