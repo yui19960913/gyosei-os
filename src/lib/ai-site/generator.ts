@@ -284,14 +284,26 @@ function parseJsonSafely(text: string): SiteContent {
     .replace(/\s*```$/i, '')
     .trim()
 
+  let result: SiteContent
   try {
-    return JSON.parse(clean) as SiteContent
+    result = JSON.parse(clean) as SiteContent
   } catch {
     // JSONを文字列中から抽出
     const match = clean.match(/\{[\s\S]*\}/)
     if (match) {
-      return JSON.parse(match[0]) as SiteContent
+      result = JSON.parse(match[0]) as SiteContent
+    } else {
+      throw new Error('AIの生成結果をJSONとして解析できませんでした')
     }
-    throw new Error('AIの生成結果をJSONとして解析できませんでした')
   }
+
+  // <br> タグを改行文字に変換
+  if (result.hero?.headline) {
+    result.hero.headline = result.hero.headline.replace(/<br\s*\/?>/gi, '\n')
+  }
+  if (result.hero?.subheadline) {
+    result.hero.subheadline = result.hero.subheadline.replace(/<br\s*\/?>/gi, '\n')
+  }
+
+  return result
 }
