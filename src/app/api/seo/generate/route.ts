@@ -91,7 +91,7 @@ faqは3件。JSONのみ出力。`
       title: `${keyword} | ${site.firmName}`,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       content: content as any,
-      status: 'published',
+      status: 'draft',
     },
   })
 

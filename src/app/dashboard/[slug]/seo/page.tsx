@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { SeoGenerateButton } from '@/components/dashboard/SeoGenerateButton'
+import { SeoPageToggle } from '@/components/dashboard/SeoPageToggle'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -58,13 +59,16 @@ export default async function SeoPage({ params }: Props) {
                     </span>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    <a
-                      href={`/seo/${encodeURIComponent(page.slug)}`}
-                      target="_blank"
-                      className="text-xs text-blue-600 hover:underline"
-                    >
-                      確認 →
-                    </a>
+                    <div className="flex items-center justify-end gap-3">
+                      <SeoPageToggle pageId={page.id} currentStatus={page.status} />
+                      <a
+                        href={`/seo/${encodeURIComponent(page.slug)}`}
+                        target="_blank"
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        確認 →
+                      </a>
+                    </div>
                   </td>
                 </tr>
               ))}
