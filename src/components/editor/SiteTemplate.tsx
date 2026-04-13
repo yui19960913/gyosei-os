@@ -400,87 +400,6 @@ const DEFAULT_PRICING: PricingItem[] = [
 
 
 
-// ─── HeroFontToolbar（Wix風フローティングツールバー） ────────────────────────
-
-const FONT_SIZES = [28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72]
-
-function HeroFontToolbar({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const wrapRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
-  const [showDropdown, setShowDropdown] = useState(false)
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false)
-        setShowDropdown(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
-
-  if (!open) {
-    return (
-      <div style={{ position: 'absolute', top: -6, right: -6, zIndex: 50 }}>
-        <button onClick={() => setOpen(true)} style={{
-          width: 28, height: 28, borderRadius: 6, border: '1px solid rgba(0,0,0,0.12)',
-          background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 12, color: '#374151', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        }}>Aa</button>
-      </div>
-    )
-  }
-
-  return (
-    <div ref={wrapRef} style={{
-      position: 'absolute', top: -44, left: 0, zIndex: 50,
-      display: 'flex', alignItems: 'center', gap: 2,
-      background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
-      borderRadius: 8, padding: '4px 6px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.08)',
-    }}>
-      <button onClick={() => onChange(Math.max(24, value - 2))} style={{
-        width: 28, height: 28, borderRadius: 4, border: 'none', background: 'transparent',
-        cursor: 'pointer', fontSize: 16, color: '#374151', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>−</button>
-
-      <div style={{ position: 'relative' }}>
-        <button onClick={() => setShowDropdown(!showDropdown)} style={{
-          minWidth: 44, height: 28, borderRadius: 4, border: '1px solid #e5e7eb', background: '#f9fafb',
-          cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#111827',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, padding: '0 6px',
-        }}>
-          {value}<span style={{ fontSize: 9, color: '#9ca3af' }}>▼</span>
-        </button>
-        {showDropdown && (
-          <div style={{
-            position: 'absolute', top: 32, left: '50%', transform: 'translateX(-50%)',
-            background: '#fff', borderRadius: 8, border: '1px solid #e5e7eb',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '4px 0',
-            maxHeight: 200, overflowY: 'auto', minWidth: 60, zIndex: 51,
-          }}>
-            {FONT_SIZES.map(s => (
-              <button key={s} onClick={() => { onChange(s); setShowDropdown(false) }} style={{
-                display: 'block', width: '100%', padding: '6px 14px', border: 'none',
-                background: s === value ? '#6366f1' : 'transparent',
-                color: s === value ? '#fff' : '#374151',
-                fontSize: 12, fontWeight: s === value ? 700 : 400,
-                cursor: 'pointer', textAlign: 'center',
-              }}>{s}px</button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <button onClick={() => onChange(Math.min(72, value + 2))} style={{
-        width: 28, height: 28, borderRadius: 4, border: 'none', background: 'transparent',
-        cursor: 'pointer', fontSize: 16, color: '#374151', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>+</button>
-    </div>
-  )
-}
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -672,8 +591,7 @@ export function SiteTemplate({
             </div>
             <div style={{ position: 'relative', maxWidth: 780, marginBottom: 24 }}>
               <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block st-hero-title"
-                style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: th.text } as React.CSSProperties} />
-              {editable && <HeroFontToolbar value={hero.heroFontSize ?? 48} onChange={v => upHero('heroFontSize', v)} />}
+                style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: th.text } as React.CSSProperties} />
             </div>
             <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block st-hero-sub"
               style={{ fontSize: 17, color: th.sub, lineHeight: 1.8, maxWidth: 520, marginBottom: 44, fontWeight: 400 } as React.CSSProperties} />
@@ -701,8 +619,7 @@ export function SiteTemplate({
             </div>
             <div style={{ position: 'relative', maxWidth: 700, marginBottom: 24 }}>
               <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block st-hero-title"
-                style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(36px, 5vw, 60px)' as string, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-2px', color: th.text } as React.CSSProperties} />
-              {editable && <HeroFontToolbar value={hero.heroFontSize ?? 48} onChange={v => upHero('heroFontSize', v)} />}
+                style={{ fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-2px', color: th.text } as React.CSSProperties} />
             </div>
             <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block st-hero-sub"
               style={{ fontSize: 17, color: th.sub, lineHeight: 1.8, maxWidth: 500, marginBottom: 44, fontWeight: 400 } as React.CSSProperties} />
@@ -729,8 +646,7 @@ export function SiteTemplate({
             </div>
             <div style={{ position: 'relative', maxWidth: 780, marginBottom: 24 }}>
               <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block st-hero-title"
-                style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(36px, 5vw, 64px)' as string, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: '#ffffff' } as React.CSSProperties} />
-              {editable && <HeroFontToolbar value={hero.heroFontSize ?? 48} onChange={v => upHero('heroFontSize', v)} />}
+                style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px', color: '#ffffff' } as React.CSSProperties} />
             </div>
             <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block st-hero-sub"
               style={{ fontSize: 17, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, maxWidth: 520, marginBottom: 44, fontWeight: 400 } as React.CSSProperties} />
@@ -758,8 +674,7 @@ export function SiteTemplate({
               </div>
               <div style={{ position: 'relative', marginBottom: 20 }}>
                 <ET as="h1" value={hero.headline} onChange={v => upHero('headline', v)} multi className="block"
-                  style={{ fontSize: hero.heroFontSize ? `${hero.heroFontSize}px` : 'clamp(28px, 4vw, 52px)' as string, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-1.5px', color: th.text } as React.CSSProperties} />
-                {editable && <HeroFontToolbar value={hero.heroFontSize ?? 40} onChange={v => upHero('heroFontSize', v)} />}
+                  style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-1.5px', color: th.text } as React.CSSProperties} />
               </div>
               <ET as="p" value={hero.subheadline} onChange={v => upHero('subheadline', v)} multi className="block"
                 style={{ fontSize: 16, color: th.sub, lineHeight: 1.85, marginBottom: 36, fontWeight: 400 } as React.CSSProperties} />
