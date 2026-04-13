@@ -585,8 +585,29 @@ export function SiteTemplate({
     heroLayout: theme?.style.heroLayout  ?? 'left' as 'left' | 'center' | 'fullbg' | 'split',
   }
 
-  // ヒーロー背景（写真なし、グラデーションで対応）
-  const heroBgGradient = `linear-gradient(135deg, ${th.primary}18 0%, ${th.primary}08 50%, ${th.accent ?? th.primary}10 100%)`
+  // テンプレート別ヒーロー背景写真
+  const FULLBG_HERO_PHOTOS: Record<string, string> = {
+    'trustful-navy':    '/images/stock/34039686_s.jpg',
+    'midnight-pro':     '/images/stock/34039686_s.jpg',
+    'deep-amethyst':    '/images/stock/34039686_s.jpg',
+    'ocean-deep':       '/images/stock/34039686_s.jpg',
+    'elegant-charcoal': '/images/stock/34156942_s.jpg',
+    'civic-blue':       '/images/stock/34156942_s.jpg',
+    'carbon-pro':       '/images/stock/34156942_s.jpg',
+    // 相談シーン
+    'consult-warm':     '/images/stock/33945329_s.jpg',
+    'consult-green':    '/images/stock/33945329_s.jpg',
+    'consult-plum':     '/images/stock/33945329_s.jpg',
+    // ビル街で会話
+    'city-trust':       '/images/stock/34039686_s.jpg',
+    'city-modern':      '/images/stock/34039686_s.jpg',
+    'city-warm':        '/images/stock/34039686_s.jpg',
+    // 高層ビル
+    'tower-navy':       '/images/stock/34156942_s.jpg',
+    'tower-slate':      '/images/stock/34156942_s.jpg',
+    'tower-emerald':    '/images/stock/34156942_s.jpg',
+  }
+  const fullbgHeroPhoto = theme?.id ? (FULLBG_HERO_PHOTOS[theme.id] ?? '/images/stock/34039686_s.jpg') : '/images/stock/34039686_s.jpg'
 
   // ── スタイル定数 ────────────────────────────────────────────────────────────
   const sectionLabel: React.CSSProperties = {
@@ -640,7 +661,9 @@ export function SiteTemplate({
 
       {/* ── Hero ── */}
       {th.heroLayout === 'left' && (
-        <section style={{ position: 'relative', overflow: 'hidden', background: heroBgGradient }}>
+        <section style={{ position: 'relative', overflow: 'hidden', backgroundImage: `url(${fullbgHeroPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          {/* 背景オーバーレイ */}
+          <div style={{ position: 'absolute', inset: 0, background: th.bg, opacity: 0.88, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: -160, right: -160, width: 560, height: 560, borderRadius: '50%', background: `radial-gradient(circle, ${th.primary}10 0%, transparent 70%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -100, left: -100, width: 400, height: 400, borderRadius: '50%', background: `radial-gradient(circle, ${th.accent}08 0%, transparent 70%)`, pointerEvents: 'none' }} />
           <div className="st-container st-hero-inner" style={{ position: 'relative', zIndex: 1 }}>
@@ -668,7 +691,9 @@ export function SiteTemplate({
       )}
 
       {th.heroLayout === 'center' && (
-        <section style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', background: heroBgGradient }}>
+        <section style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', backgroundImage: `url(${fullbgHeroPhoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          {/* 背景オーバーレイ */}
+          <div style={{ position: 'absolute', inset: 0, background: th.bg, opacity: 0.88, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 800, height: 800, borderRadius: '50%', background: `radial-gradient(circle, ${th.primary}08 0%, transparent 65%)`, pointerEvents: 'none' }} />
           <div className="st-container st-hero-inner" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ marginBottom: 24 }}>

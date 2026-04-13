@@ -180,4 +180,82 @@ export const GYOSEI_TEMPLATES: SiteTemplateTheme[] = [
     colors: { primary: '#3730A3', accent: '#6366F1', bg: '#EEF2FF', surface: '#FFFFFF', text: '#1E1B4B', sub: '#6B7280' },
     style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '6px', headerStyle: 'solid', heroLayout: 'left' },
   },
+
+  // ── 写真ヒーロー: 相談シーン (33945329_s.jpg) ──
+  {
+    id: 'consult-warm',
+    name: 'コンサルトウォーム',
+    tag: '親しみ・相談',
+    desc: '相談風景の写真で親しみやすさと安心感を演出',
+    colors: { primary: '#2563EB', accent: '#60A5FA', bg: '#F8FAFF', surface: '#FFFFFF', text: '#1E293B', sub: '#64748B' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '10px', headerStyle: 'minimal', heroLayout: 'left' },
+  },
+  {
+    id: 'consult-green',
+    name: 'コンサルトグリーン',
+    tag: '安心・寄り添い',
+    desc: '相談風景×グリーンで寄り添う安心感を表現',
+    colors: { primary: '#166534', accent: '#4ADE80', bg: '#F0FDF4', surface: '#FFFFFF', text: '#14532D', sub: '#6B8A6C' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '8px', headerStyle: 'bordered', heroLayout: 'center' },
+  },
+  {
+    id: 'consult-plum',
+    name: 'コンサルトプラム',
+    tag: '上品・専門性',
+    desc: '相談風景×プラムカラーで上品かつ専門的な印象',
+    colors: { primary: '#7E22CE', accent: '#A855F7', bg: '#FAF5FF', surface: '#FFFFFF', text: '#3B0764', sub: '#9A7AB5' },
+    style: { fontFamily: '"Noto Serif JP", serif', borderRadius: '6px', headerStyle: 'solid', heroLayout: 'left' },
+  },
+
+  // ── 写真ヒーロー: ビル街で会話 (34039686_s.jpg) ──
+  {
+    id: 'city-trust',
+    name: 'シティトラスト',
+    tag: '都会的・信頼',
+    desc: 'ビル街の会話シーンで都会的な信頼感を演出',
+    colors: { primary: '#1E40AF', accent: '#3B82F6', bg: '#EFF6FF', surface: '#FFFFFF', text: '#1E3A5F', sub: '#6B80A8' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '6px', headerStyle: 'solid', heroLayout: 'left' },
+  },
+  {
+    id: 'city-modern',
+    name: 'シティモダン',
+    tag: '洗練・スマート',
+    desc: 'ビル街の会話シーン×モノトーンで洗練されたスマートさ',
+    colors: { primary: '#18181B', accent: '#71717A', bg: '#FAFAFA', surface: '#FFFFFF', text: '#09090B', sub: '#A1A1AA' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '4px', headerStyle: 'minimal', heroLayout: 'center' },
+  },
+  {
+    id: 'city-warm',
+    name: 'シティウォーム',
+    tag: '都会・親しみ',
+    desc: 'ビル街の会話シーン×暖色で都会的かつ親しみやすい印象',
+    colors: { primary: '#B45309', accent: '#F59E0B', bg: '#FFFBEB', surface: '#FFFFFF', text: '#451A03', sub: '#92690D' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '10px', headerStyle: 'bordered', heroLayout: 'left' },
+  },
+
+  // ── 写真ヒーロー: 高層ビル (34156942_s.jpg) ──
+  {
+    id: 'tower-navy',
+    name: 'タワーネイビー',
+    tag: '格式・プロ',
+    desc: '高層ビル×ネイビーで堂々とした格式とプロフェッショナル感',
+    colors: { primary: '#1E3A8A', accent: '#2563EB', bg: '#EFF6FF', surface: '#FFFFFF', text: '#1E2E50', sub: '#6B80A8' },
+    style: { fontFamily: '"Noto Serif JP", serif', borderRadius: '4px', headerStyle: 'solid', heroLayout: 'left' },
+  },
+  {
+    id: 'tower-slate',
+    name: 'タワースレート',
+    tag: '都会的・先進',
+    desc: '高層ビル×スレートグレーで先進的な都会のイメージ',
+    colors: { primary: '#334155', accent: '#94A3B8', bg: '#F8FAFC', surface: '#FFFFFF', text: '#0F172A', sub: '#94A3B8' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '6px', headerStyle: 'minimal', heroLayout: 'center' },
+  },
+  {
+    id: 'tower-emerald',
+    name: 'タワーエメラルド',
+    tag: '信頼・成長',
+    desc: '高層ビル×エメラルドで信頼と成長を象徴',
+    colors: { primary: '#065F46', accent: '#10B981', bg: '#ECFDF5', surface: '#FFFFFF', text: '#022C22', sub: '#5A8A7A' },
+    style: { fontFamily: '"Noto Sans JP", sans-serif', borderRadius: '8px', headerStyle: 'bordered', heroLayout: 'left' },
+  },
 ]
