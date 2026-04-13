@@ -4,14 +4,14 @@ import { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { AiAvatar } from './AiAvatar'
 import { GeneratingProgress } from './GeneratingProgress'
-import { SERVICE_OPTIONS, STYLE_OPTIONS } from '@/lib/ai-site/types'
+import { SERVICE_OPTIONS } from '@/lib/ai-site/types'
 import { AREA_REGIONS } from '@/lib/ai-site/areas'
 import type { Region, Prefecture } from '@/lib/ai-site/areas'
 import type { GenerateInput, UserTestimonial } from '@/lib/ai-site/types'
 
 // ---- ステップ定義 ----
 
-type StepId = 'firmName' | 'ownerName' | 'ownerBio' | 'services' | 'serviceAreas' | 'strengths' | 'styles'
+type StepId = 'firmName' | 'ownerName' | 'ownerBio' | 'services' | 'serviceAreas' | 'strengths'
 
 interface Step {
   id: StepId
@@ -69,13 +69,6 @@ const STEPS: Step[] = [
     question: 'できることを教えてください（任意）',
     subtext: '当てはまるものを選んでください。複数選択可。',
     type: 'strength-select',
-    required: false,
-  },
-  {
-    id: 'styles',
-    question: '文章スタイルを選んでください（複数選択可）',
-    type: 'checkbox',
-    options: STYLE_OPTIONS,
     required: false,
   },
 ]
@@ -473,7 +466,7 @@ export function QuestionWizard({ ownerEmail }: { ownerEmail: string }) {
 
   const toggleCheckbox = useCallback(
     (option: string) => {
-      const current = answers[currentStep.id as 'services' | 'styles'] as string[]
+      const current = answers[currentStep.id as 'services'] as string[]
       const next = current.includes(option)
         ? current.filter((v) => v !== option)
         : [...current, option]
