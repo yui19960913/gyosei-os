@@ -36,6 +36,20 @@ function LoginForm() {
           {email} にログインリンクを送りました。<br />
           リンクの有効期限は15分です。
         </p>
+
+        <div className="mt-6 bg-gray-50 rounded-lg p-4 text-left">
+          <p className="text-xs font-semibold text-gray-700 mb-2">メールが届かない場合</p>
+          <ul className="text-xs text-gray-500 leading-relaxed space-y-1">
+            <li>・迷惑メールフォルダをご確認ください</li>
+            <li>・メールアドレスに誤りがないかご確認ください</li>
+          </ul>
+          <button
+            onClick={() => setSent(false)}
+            className="mt-3 text-xs text-blue-600 font-semibold hover:underline"
+          >
+            別のメールアドレスで再送する
+          </button>
+        </div>
       </div>
     )
   }
