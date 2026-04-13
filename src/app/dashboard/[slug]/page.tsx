@@ -7,6 +7,7 @@ import { PublishButton } from '@/components/dashboard/PublishButton'
 import { UnpublishButton } from '@/components/dashboard/UnpublishButton'
 import { SocialLinksEditor } from '@/components/dashboard/SocialLinksEditor'
 import { MapAddressEditor } from '@/components/dashboard/MapAddressEditor'
+import { WelcomeCard } from '@/components/dashboard/WelcomeCard'
 import type { SiteContent } from '@/lib/ai-site/types'
 
 interface Props {
@@ -61,6 +62,9 @@ export default async function DashboardPage({ params }: Props) {
           )}
         </div>
       </div>
+
+      {/* 初回ログイン案内 */}
+      <WelcomeCard slug={slug} prefecture={site.prefecture} />
 
       {/* KPI カード */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
