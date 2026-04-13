@@ -623,6 +623,31 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
 
         {/* 右 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Undo / Redo ボタン */}
+          <div style={{ display: 'flex', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, overflow: 'hidden' }}>
+            <button
+              onClick={undo}
+              disabled={historyIndex <= 0}
+              title="元に戻す (Ctrl+Z)"
+              style={{
+                background: 'rgba(255,255,255,0.07)', border: 'none', cursor: historyIndex <= 0 ? 'default' : 'pointer',
+                color: historyIndex <= 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)',
+                fontSize: 14, padding: '6px 10px', lineHeight: 1,
+              }}
+            >↩</button>
+            <button
+              onClick={redo}
+              disabled={historyIndex >= history.length - 1}
+              title="やり直す (Ctrl+Shift+Z)"
+              style={{
+                background: 'rgba(255,255,255,0.07)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)',
+                cursor: historyIndex >= history.length - 1 ? 'default' : 'pointer',
+                color: historyIndex >= history.length - 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)',
+                fontSize: 14, padding: '6px 10px', lineHeight: 1,
+              }}
+            >↪</button>
+          </div>
+
           {/* テンプレートボタン */}
           <button
             onClick={() => setShowTemplatePanel(true)}
