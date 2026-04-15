@@ -31,7 +31,7 @@ export default async function LeadsPage({ params }: Props) {
         <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
           <p className="text-4xl mb-4">📭</p>
           <p className="text-gray-500">まだ問い合わせがありません</p>
-          <p className="text-sm text-gray-400 mt-2">サイトを公開すると問い合わせが届きます</p>
+          <p className="text-sm text-gray-400 mt-2">問い合わせがあるとここに表示されます</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
