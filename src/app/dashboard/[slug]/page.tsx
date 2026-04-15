@@ -84,7 +84,7 @@ export default async function DashboardPage({ params }: Props) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
           { label: '総問い合わせ数', value: totalLeads, icon: '👤', color: 'blue' },
-          { label: '今月の問い合わせ', value: monthlyLeads, icon: '📅', color: 'green' },
+          { label: '今月の問い合わせ', value: monthlyLeads, icon: '🗓', color: 'green' },
           { label: 'SEOページ数', value: totalSeoPages, icon: '📄', color: 'purple' },
           { label: '広告LP数', value: 0, icon: '📣', color: 'orange' },
         ].map((card) => (
