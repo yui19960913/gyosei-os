@@ -476,7 +476,7 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
   const [showReviewerModal, setShowReviewerModal] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'review' | 'custom' | null>(null)
   const [selectedReviewer, setSelectedReviewer] = useState<string | null>(null)
-  const [showToast, setShowToast] = useState(true)
+  const [showToast, setShowToast] = useState(!isPublished)
   const [resetting, setResetting] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
