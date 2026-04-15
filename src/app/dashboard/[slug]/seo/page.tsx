@@ -26,7 +26,7 @@ export default async function SeoPage({ params }: Props) {
     <div className="p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">業務別ページ管理</h1>
-        <p className="text-sm text-gray-500 mt-1 leading-relaxed">「ビザ申請 茨城県」のように業務×地域ごとのページを作ると、<br />Googleで検索した人があなたのホームページを見つけやすくなります。</p>
+        <p className="text-sm text-gray-500 mt-1 leading-relaxed">ホームページとは別に、業務ごとの専用ページを作ることができます。<br />「ビザ申請 茨城県」のように業務×地域のページを増やすと、Googleで検索した人に見つけてもらいやすくなります。</p>
       </div>
 
       {/* 生成済みページ */}
