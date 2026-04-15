@@ -31,6 +31,7 @@ export default async function PreviewPage({ params }: Props) {
       prefecture={site.prefecture}
       initialContent={content}
       initialTemplateId={site.templateId ?? undefined}
+      isPublished={site.status === 'published'}
     />
   )
 }

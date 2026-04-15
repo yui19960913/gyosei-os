@@ -462,9 +462,10 @@ interface Props {
   prefecture: string
   initialContent: SiteContent
   initialTemplateId?: string
+  isPublished?: boolean
 }
 
-export function PreviewClient({ slug, firmName, prefecture, initialContent, initialTemplateId }: Props) {
+export function PreviewClient({ slug, firmName, prefecture, initialContent, initialTemplateId, isPublished }: Props) {
   const [content, setContent] = useState<SiteContent>(initialContent)
   const [history, setHistory] = useState<SiteContent[]>([initialContent])
   const [historyIndex, setHistoryIndex] = useState(0)
@@ -492,12 +493,13 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
   }, [])
 
   useEffect(() => {
+    if (isPublished) return
     const key = `guide_shown_${slug}`
     if (!localStorage.getItem(key)) {
       setShowGuide(true)
       localStorage.setItem(key, '1')
     }
-  }, [slug])
+  }, [slug, isPublished])
 
   const saveToDb = useCallback(async (c: SiteContent) => {
     setSaving(true)
