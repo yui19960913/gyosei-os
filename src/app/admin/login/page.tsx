@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 w-full max-w-sm p-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">管理者ログイン</h1>
-          <p className="text-sm text-gray-500 mt-1">AI集客OS 運営管理画面</p>
+          <p className="text-sm text-gray-500 mt-1">noren 運営管理画面</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

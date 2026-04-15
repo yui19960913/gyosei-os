@@ -183,7 +183,7 @@ export function SitePageRenderer({ firmName, prefecture, content, siteSlug, isPr
       {/* フッター */}
       <footer className="py-8 px-6 bg-gray-50 text-center text-sm text-gray-400 border-t border-gray-200">
         <p>© {new Date().getFullYear()} {firmName}</p>
-        <p className="mt-1 text-xs">Powered by AI集客OS</p>
+        <p className="mt-1 text-xs">Powered by noren</p>
       </footer>
     </div>
   )

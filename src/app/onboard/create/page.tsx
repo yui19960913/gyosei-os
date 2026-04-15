@@ -61,7 +61,7 @@ export default function OnboardCreatePage() {
             fontSize: 12, fontWeight: 700, color: '#6366f1', letterSpacing: '0.5px',
             marginBottom: 20,
           }}>
-            AI集客OS for 行政書士
+            noren for 行政書士
           </span>
 
           <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.8 }}>

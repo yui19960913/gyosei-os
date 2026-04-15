@@ -1114,7 +1114,7 @@ export function SiteTemplate({
         <p style={{ fontSize: 11, color: '#e5e7eb', marginTop: 12 }}>
           <a href="https://webseisei.com" target="_blank" rel="noopener noreferrer"
             style={{ color: '#d1d5db', textDecoration: 'none' }}>
-            Powered by AI集客OS
+            Powered by noren
           </a>
         </p>
       </footer>

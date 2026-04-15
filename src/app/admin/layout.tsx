@@ -13,7 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="admin-sidebar">
         <div className="px-6 py-4 border-b border-gray-200">
           <p className="text-xs text-gray-400">運営管理</p>
-          <p className="text-sm font-bold text-gray-900 mt-0.5">AI集客OS</p>
+          <p className="text-sm font-bold text-gray-900 mt-0.5">noren</p>
         </div>
         <nav className="py-2">
           {navItems.map((item) => (

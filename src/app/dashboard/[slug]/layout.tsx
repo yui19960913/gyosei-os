@@ -37,7 +37,7 @@ export default async function DashboardLayout({ children, params }: Props) {
       <aside className="w-60 shrink-0 bg-white border-r border-gray-200 flex flex-col">
         {/* ヘッダー */}
         <div className="px-5 py-5 border-b border-gray-200">
-          <p className="text-xs text-gray-400 mb-1">AI集客OS</p>
+          <p className="text-xs text-gray-400 mb-1">noren</p>
           <p className="text-sm font-bold text-gray-900 leading-tight">{site.firmName}</p>
           <div className="mt-2">
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${

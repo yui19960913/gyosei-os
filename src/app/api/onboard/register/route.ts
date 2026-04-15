@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: process.env.RESEND_FROM ?? 'noreply@webseisei.com',
         to: process.env.ADMIN_EMAIL ?? 'admin@webseisei.com',
-        subject: '【AI集客OS】新規レビュー依頼が届きました',
+        subject: '【noren】新規レビュー依頼が届きました',
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
             <h2 style="font-size: 20px; color: #111;">新規レビュー依頼</h2>
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: process.env.RESEND_FROM ?? 'noreply@webseisei.com',
       to: email,
-      subject: '【AI集客OS】サイトが公開されました',
+      subject: '【noren】サイトが公開されました',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
           <h2 style="font-size: 20px; color: #111;">${name} さん、サイトが公開されました！</h2>
