@@ -32,6 +32,8 @@ export default async function DashboardPage({ params }: Props) {
   })
 
   const seoKeywords = site.seoKeywords as string[]
+  const seoPageCount = await prisma.aiSeoPage.count({ where: { siteId: site.id } })
+  const seoPublishedCount = await prisma.aiSeoPage.count({ where: { siteId: site.id, status: 'published' } })
   const siteContent = site.siteContent as unknown as SiteContent
   const isMonthly = site.plan === 'monthly' || site.plan === 'annual'
 
@@ -117,28 +119,26 @@ export default async function DashboardPage({ params }: Props) {
           )}
         </div>
 
-        {/* SEOキーワード候補 */}
+        {/* 業務別ページ */}
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">業務別ページ候補</h2>
+            <h2 className="text-sm font-semibold text-gray-900">業務別ページ</h2>
             <Link href={`/dashboard/${slug}/seo`} className="text-xs text-blue-600 hover:underline">
               管理する →
             </Link>
           </div>
-          {seoKeywords.length === 0 ? (
+          {seoPageCount === 0 ? (
             <div className="px-5 py-10 text-center text-gray-400 text-sm">
-              キーワードがありません
+              まだ業務別ページを作成していません
             </div>
           ) : (
-            <div className="p-5 flex flex-wrap gap-2">
-              {seoKeywords.map((kw, i) => (
-                <span
-                  key={i}
-                  className="bg-blue-50 text-blue-700 text-xs px-3 py-1.5 rounded-full font-medium"
-                >
-                  {kw}
-                </span>
-              ))}
+            <div className="p-5">
+              <p className="text-sm text-gray-700 mb-1">
+                {seoPageCount}ページ作成済み（公開中: {seoPublishedCount}件）
+              </p>
+              <p className="text-xs text-gray-400">
+                管理画面から公開・非公開を切り替えられます
+              </p>
             </div>
           )}
         </div>
