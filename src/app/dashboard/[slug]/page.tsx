@@ -113,7 +113,7 @@ export default async function DashboardPage({ params }: Props) {
         {/* SEOキーワード候補 */}
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">SEOキーワード候補</h2>
+            <h2 className="text-sm font-semibold text-gray-900">業務別ページ候補</h2>
             <Link href={`/dashboard/${slug}/seo`} className="text-xs text-blue-600 hover:underline">
               管理する →
             </Link>
@@ -151,14 +151,14 @@ export default async function DashboardPage({ params }: Props) {
           <div>
             <p className="text-sm font-semibold text-blue-900 mb-1">AI改善提案</p>
             <p className="text-sm text-blue-700">
-              SEOページを作成すると、Google検索からの流入が見込めます。
+              業務別ページを作成すると、Google検索からの流入が見込めます。
               まずは「{seoKeywords[0] ?? site.services[0] + ' ' + site.prefecture}」のページを生成してみましょう。
             </p>
             <Link
               href={`/dashboard/${slug}/seo`}
               className="inline-block mt-3 text-xs text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              SEOページを生成 →
+              業務別ページを生成 →
             </Link>
           </div>
         </div>

@@ -8,8 +8,7 @@ import { siteUrl } from '@/lib/urls'
 const NAV = [
   { href: '',       label: 'ダッシュボード', icon: '📊' },
   { href: '/leads', label: '問い合わせ',     icon: '👤' },
-  { href: '/seo',   label: 'SEOページ',      icon: '🔍' },
-  { href: '/ads',   label: '広告管理',       icon: '📣' },
+  { href: '/seo',   label: '業務別ページ',    icon: '📄' },
 ]
 
 interface Props {
