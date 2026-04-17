@@ -36,6 +36,22 @@ interface SeiSeiChatProps {
   slug: string
   /** 有料プラン加入済みならtrue → 無料回数制限をスキップ、1分10回のレート制限のみ */
   isPaidPlan?: boolean
+  /** キャッチコピー変更などのアクションでサイトコンテンツを更新するコールバック */
+  onUpdateContent?: (updater: (prev: import('@/lib/ai-site/types').SiteContent) => import('@/lib/ai-site/types').SiteContent) => void
+}
+
+// AIの返答からアクションブロックをパースする
+function parseAction(text: string): { displayText: string; action: { action: string; value: string } | null } {
+  const actionMatch = text.match(/<<<ACTION>>>([\s\S]*?)<<<END_ACTION>>>/)
+  if (!actionMatch) return { displayText: text, action: null }
+
+  const displayText = text.replace(/<<<ACTION>>>[\s\S]*?<<<END_ACTION>>>/, '').trim()
+  try {
+    const action = JSON.parse(actionMatch[1].trim()) as { action: string; value: string }
+    return { displayText, action }
+  } catch {
+    return { displayText: text, action: null }
+  }
 }
 
 // ── コイン購入モーダル ────────────────────────────────────────────────
@@ -158,7 +174,7 @@ function EatingShow({ fatBefore, fatAfter, onDone }: {
 }
 
 // ── メインコンポーネント ──────────────────────────────────────────────
-export function SeiSeiChat({ isOpen, onClose, slug, isPaidPlan = false }: SeiSeiChatProps) {
+export function SeiSeiChat({ isOpen, onClose, slug, isPaidPlan = false, onUpdateContent }: SeiSeiChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'sei', text: 'こんにちは！AIアシスタントのせいせいです😊\nサイトのことでわからないことがあれば、なんでも気軽に聞いてくださいね。' },
   ])
@@ -235,16 +251,42 @@ export function SeiSeiChat({ isOpen, onClose, slug, isPaidPlan = false }: SeiSei
     setLoading(true)
 
     try {
+      // 会話履歴を構築（初回挨拶を除く）
+      const historyForApi = messages
+        .slice(1) // 最初の挨拶メッセージを除く
+        .map(m => ({
+          role: m.role === 'sei' ? 'assistant' as const : 'user' as const,
+          content: m.text,
+        }))
+
       const res  = await fetch(`/api/editor/${slug}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg }),
+        body: JSON.stringify({ message: msg, history: historyForApi }),
       })
       const data = await res.json() as { reply?: string; error?: string }
-      setMessages(prev => [...prev, {
-        role: 'sei',
-        text: data.reply ?? 'うまく答えられませんでした。もう一度試してみてください。',
-      }])
+      const rawReply = data.reply ?? 'うまく答えられませんでした。もう一度試してみてください。'
+
+      // アクションブロックをパース
+      const { displayText, action } = parseAction(rawReply)
+
+      setMessages(prev => [...prev, { role: 'sei', text: displayText }])
+
+      // アクション実行: キャッチコピー変更
+      if (action && action.action === 'update_headline' && onUpdateContent) {
+        const newHeadline = action.value.replace(/\\n/g, '\n')
+        onUpdateContent(prev => ({
+          ...prev,
+          hero: { ...prev.hero, headline: newHeadline },
+        }))
+        // 反映完了メッセージ
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            role: 'sei',
+            text: 'キャッチコピーをサイトに反映しました！✨',
+          }])
+        }, 500)
+      }
     } catch {
       setMessages(prev => [...prev, { role: 'sei', text: 'エラーが発生しました。もう一度試してください。' }])
     } finally {

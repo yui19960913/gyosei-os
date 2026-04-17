@@ -347,6 +347,11 @@ export function SiteEditor({ slug, firmName, prefecture, initialContent, initial
         onClose={() => setShowChat(false)}
         slug={slug}
         isPaidPlan={isPaid}
+        onUpdateContent={(updater) => {
+          const updated = updater(content)
+          setContent(updated)
+          setIsDirty(true)
+        }}
       />
 
       {/* ── ヒント（fixed bottom） ── */}

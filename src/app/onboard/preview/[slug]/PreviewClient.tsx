@@ -826,6 +826,10 @@ export function PreviewClient({ slug, firmName, prefecture, initialContent, init
         isOpen={showChat}
         onClose={() => setShowChat(false)}
         slug={slug}
+        onUpdateContent={(updater) => {
+          const updated = updater(content)
+          void handleUpdate(updated)
+        }}
       />
 
       {/* ── テンプレートパネル ── */}
