@@ -514,11 +514,16 @@ export function QuestionWizard({ ownerEmail }: { ownerEmail: string }) {
         body: JSON.stringify({ ...answers, overwrite }),
       })
 
-      const data = await res.json() as {
+      let data: {
         slug?: string
         error?: string
         existingPaid?: boolean
         existingDraft?: boolean
+      }
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error('サーバーからの応答を処理できませんでした。時間をおいてもう一度お試しください。')
       }
 
       // 決済済みサイトが存在 → ダッシュボードへ
