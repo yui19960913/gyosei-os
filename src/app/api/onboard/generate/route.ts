@@ -103,7 +103,10 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // 別入力 & 上書き承認済み → 既存サイトを削除して再生成
+    // 別入力 & 上書き承認済み → 関連レコードを削除してから再生成
+    await prisma.aiSeoPage.deleteMany({ where: { siteId: existingSite.id } })
+    await prisma.aiSiteLead.deleteMany({ where: { siteId: existingSite.id } })
+    await prisma.reviewRequest.deleteMany({ where: { siteId: existingSite.id } })
     await prisma.aiSite.delete({ where: { id: existingSite.id } })
     console.log(`[generate] 既存サイトを上書き削除: slug=${existingSite.slug}`)
   }
